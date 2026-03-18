@@ -1,63 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bonoeco - Baseball Gloves</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bonoeco</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-neutral-950 text-neutral-100">
 
-  <!-- Header with Navigation -->
-  <header class="p-6 border-b border-neutral-800 flex items-center justify-between">
-    <img src="img/logob.png" alt="Bonoeco Logo" class="w-20 h-auto" />
-    <nav>
-      <ul class="flex space-x-6">
-        <li><a href="index.html" class="text-sm text-neutral-400 hover:text-white">Home</a></li>
-        <li><a href="product.html" class="text-sm text-neutral-400 hover:text-white">Products</a></li>
-        <li><a href="contact.html" class="text-sm text-neutral-400 hover:text-white">Contact</a></li>
+<header class="p-6 border-b border-neutral-800 flex items-center justify-between">
+  <a href="index.html" class="flex items-center gap-3">
+    <img src="img/logob.png" class="w-10 h-auto" />
+    <span class="text-sm tracking-widest">BONOECO</span>
+  </a>
+
+  <nav class="text-sm text-neutral-400">
+    <ul class="flex space-x-6">
+      <li><a href="index.html" class="hover:text-white">Home</a></li>
+      <li><a href="products.html" class="hover:text-white">Products</a></li>
+      <li><a href="about.html" class="hover:text-white">About</a></li>
+      <li><a href="contact.html" class="hover:text-white">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="relative py-32 text-center">
+  <img src="img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40">
+  <div class="relative px-6">
+    <h1 class="text-5xl font-light mb-6">Precision Crafted Gloves</h1>
+    <p class="text-neutral-300 max-w-xl mx-auto">
+      Built from premium North American leather for elite performance.
+    </p>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-16 px-6 max-w-6xl mx-auto">
+  <h2 class="text-2xl mb-10">Featured</h2>
+
+  <div class="grid md:grid-cols-3 gap-8">
+    <a href="product.html" class="border border-neutral-800 p-4 hover:border-white transition">
+      <img src="img/glove1.jpg" class="aspect-square object-contain mb-4 bg-neutral-900">
+      <h3>Infield Glove</h3>
+    </a>
+
+    <a href="product.html" class="border border-neutral-800 p-4 hover:border-white transition">
+      <img src="img/glove2.jpg" class="aspect-square object-contain mb-4 bg-neutral-900">
+      <h3>Outfield Glove</h3>
+    </a>
+
+    <a href="product.html" class="border border-neutral-800 p-4 hover:border-white transition">
+      <img src="img/glove3.jpg" class="aspect-square object-contain mb-4 bg-neutral-900">
+      <h3>Pitcher Glove</h3>
+    </a>
+  </div>
+</section>
+
+<footer class="border-t border-neutral-800 mt-20">
+  <div class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-10 text-sm text-neutral-400">
+
+    <!-- Brand -->
+    <div>
+      <h3 class="text-white mb-4">BONOECO</h3>
+      <p>Premium baseball gloves crafted from North American steer and Kip leather.</p>
+    </div>
+
+    <!-- Navigation -->
+    <div>
+      <h3 class="text-white mb-4">Navigation</h3>
+      <ul class="space-y-2">
+        <li><a href="index.html" class="hover:text-white">Home</a></li>
+        <li><a href="products.html" class="hover:text-white">Products</a></li>
+        <li><a href="about.html" class="hover:text-white">About</a></li>
+        <li><a href="contact.html" class="hover:text-white">Contact</a></li>
       </ul>
-    </nav>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="relative py-32 px-6 text-center">
-    <img src="img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40">
-    <div class="relative">
-      <h2 class="text-4xl md:text-6xl font-light mb-6">Crafted from North American Steer</h2>
-      <p class="text-neutral-300 max-w-xl mx-auto">
-        Premium baseball gloves built for serious players who demand performance, durability, and precision.
-      </p>
     </div>
-  </section>
 
-  <!-- Products Section -->
-  <section id="products" class="py-16 px-6 max-w-6xl mx-auto">
-    <h3 class="text-2xl mb-10">Our Products</h3>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="border border-neutral-800 p-4">
-        <a href="product.html">
-          <img src="img/glove1.jpg" class="w-full h-48 object-contain mb-4" />
-          <h4 class="text-lg font-semibold">Infield Glove</h4>
-          <p class="text-sm text-neutral-400">11.5" Kip Leather</p>
-        </a>
-      </div>
-      <div class="border border-neutral-800 p-4">
-        <a href="product.html">
-          <img src="img/glove2.jpg" class="w-full h-48 object-contain mb-4" />
-          <h4 class="text-lg font-semibold">Outfield Glove</h4>
-          <p class="text-sm text-neutral-400">12.75" Steerhide</p>
-        </a>
-      </div>
-      <div class="border border-neutral-800 p-4">
-        <a href="product.html">
-          <img src="img/glove3.jpg" class="w-full h-48 object-contain mb-4" />
-          <h4 class="text-lg font-semibold">Pitcher Glove</h4>
-          <p class="text-sm text-neutral-400">12" Steerhide</p>
-        </a>
-      </div>
+    <!-- Social -->
+    <div>
+      <h3 class="text-white mb-4">Connect</h3>
+      <p>Email: your@email.com</p>
+      <p class="mt-2">Instagram: @bonoeco</p>
     </div>
-  </section>
+
+  </div>
+
+  <div class="text-center text-xs text-neutral-600 pb-6">
+    © 2026 BONOECO. All rights reserved.
+  </div>
+</footer>
 
 </body>
 </html>
