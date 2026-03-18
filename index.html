@@ -3,85 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bonoeco Gloves</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Bonoeco - Baseball Gloves</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-neutral-950 text-neutral-100 font-sans">
+<body class="bg-neutral-950 text-neutral-100">
 
-  <!-- Navbar -->
-  <header class="flex justify-between items-center p-6 border-b border-neutral-800">
-    <h1 class="text-xl font-semibold tracking-widest">BONOECO</h1>
-    <nav class="space-x-6 text-sm">
-      <a href="#products" class="hover:text-neutral-400">Products</a>
-      <a href="#materials" class="hover:text-neutral-400">Materials</a>
-      <a href="#about" class="hover:text-neutral-400">About</a>
-      <a href="#contact" class="hover:text-neutral-400">Contact</a>
-    </nav>
+  <!-- Header -->
+  <header class="p-6 border-b border-neutral-800">
+    <h1 class="text-xl font-semibold">BONOECO</h1>
   </header>
 
-  <!-- Hero -->
-  <section class="text-center py-24 px-6">
-    <h2 class="text-4xl md:text-6xl font-light mb-6">
-      Crafted from North American Steer
-    </h2>
-    <p class="text-neutral-400 max-w-xl mx-auto">
-      Premium baseball gloves built for serious players who demand performance, durability, and precision.
-    </p>
+  <!-- Hero Section -->
+  <section class="relative py-32 px-6 text-center">
+    <img src="img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40">
+    <div class="relative">
+      <h2 class="text-4xl md:text-6xl font-light mb-6">Crafted from North American Steer</h2>
+      <p class="text-neutral-300 max-w-xl mx-auto">
+        Premium baseball gloves built for serious players who demand performance, durability, and precision.
+      </p>
+    </div>
   </section>
 
-  <!-- Products -->
+  <!-- Products Section -->
   <section id="products" class="py-16 px-6 max-w-6xl mx-auto">
-    <h3 class="text-2xl mb-10">Products</h3>
+    <h3 class="text-2xl mb-10">Our Products</h3>
     <div class="grid md:grid-cols-3 gap-8">
       <div class="border border-neutral-800 p-4">
-        <div class="h-40 bg-neutral-800 mb-4"></div>
-        <h4>Infield Glove</h4>
-        <p class="text-sm text-neutral-400">11.5" Kip Leather</p>
+        <a href="product.html">
+          <img src="img/glove1.jpg" class="w-full h-48 object-contain mb-4" />
+          <h4 class="text-lg font-semibold">Infield Glove</h4>
+          <p class="text-sm text-neutral-400">11.5" Kip Leather</p>
+        </a>
       </div>
       <div class="border border-neutral-800 p-4">
-        <div class="h-40 bg-neutral-800 mb-4"></div>
-        <h4>Outfield Glove</h4>
-        <p class="text-sm text-neutral-400">12.75" Steerhide</p>
+        <a href="product.html">
+          <img src="img/glove2.jpg" class="w-full h-48 object-contain mb-4" />
+          <h4 class="text-lg font-semibold">Outfield Glove</h4>
+          <p class="text-sm text-neutral-400">12.75" Steerhide</p>
+        </a>
       </div>
       <div class="border border-neutral-800 p-4">
-        <img src="img/1-1.jpg" class="mb-4 w-full h-40 object-cover" />
-        <h4>Pitcher Glove</h4>
-        <p class="text-sm text-neutral-400">12" Steerhide</p>
+        <a href="product.html">
+          <img src="img/glove3.jpg" class="w-full h-48 object-contain mb-4" />
+          <h4 class="text-lg font-semibold">Pitcher Glove</h4>
+          <p class="text-sm text-neutral-400">12" Steerhide</p>
+        </a>
       </div>
     </div>
   </section>
-
-  <!-- Materials -->
-  <section id="materials" class="py-16 px-6 bg-neutral-900">
-    <div class="max-w-4xl mx-auto">
-      <h3 class="text-2xl mb-6">Materials</h3>
-      <p class="text-neutral-400 mb-4">
-        We use only premium North American steerhide for unmatched durability and structure.
-      </p>
-      <p class="text-neutral-400">
-        Kip leather offers a lighter, smoother feel preferred by advanced players.
-      </p>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section id="about" class="py-16 px-6 max-w-4xl mx-auto">
-    <h3 class="text-2xl mb-6">About Bonoeco</h3>
-    <p class="text-neutral-400">
-      Bonoeco is dedicated to crafting high-class baseball gloves using the finest materials. Built for performance and longevity, each glove reflects precision and passion.
-    </p>
-  </section>
-
-  <!-- Contact -->
-  <section id="contact" class="py-16 px-6 bg-neutral-900 text-center">
-    <h3 class="text-2xl mb-4">Contact</h3>
-    <p class="text-neutral-400">contact@bonoeco.com</p>
-  </section>
-
-  <!-- Footer -->
-  <footer class="text-center text-sm text-neutral-600 py-6">
-    © 2026 Bonoeco. All rights reserved.
-  </footer>
 
 </body>
 </html>
