@@ -89,6 +89,7 @@
         document.getElementById("f-position").value = card.getAttribute("data-value");
         setStatus("");
         renderSizes(card.getAttribute("data-value"));
+        showGlove(card.getAttribute("data-value"));
         updateSummary();
         if (preview) {
           preview.src = card.getAttribute("data-img");
@@ -182,6 +183,38 @@
     });
   }
 
+  // Live glove illustration: each part recolors as its color is picked,
+  // and the shape family follows the chosen position.
+  var gloveBox = document.getElementById("glove-preview");
+  var VAR_FOR = {
+    "f-web-color": "--c-web", "f-palm-color": "--c-palm", "f-wrist-color": "--c-wrist",
+    "f-binding-color": "--c-binding", "f-welting-color": "--c-welting",
+    "f-lacing-color": "--c-lacing", "f-stitching-color": "--c-stitching",
+    "f-logo-color": "--c-logo"
+  };
+  function applyColors() {
+    if (!gloveBox || !gloveBox.style || !gloveBox.style.setProperty) return;
+    COLOR_FIELDS.forEach(function (pair) {
+      var el = document.getElementById(pair[0]);
+      var name = el ? el.value : "";
+      var v = VAR_FOR[pair[0]];
+      if (!v) return;
+      if (name && HEX[name]) gloveBox.style.setProperty(v, HEX[name]);
+      else gloveBox.style.removeProperty(v);
+    });
+  }
+  var FAMILY = {
+    "Infield": "fielder", "Outfield": "fielder", "Pitcher": "fielder",
+    "First base": "firstbase", "Catcher": "catcher", "Training": "training"
+  };
+  function showGlove(position) {
+    if (!gloveBox) return;
+    var fam = FAMILY[position] || "fielder";
+    gloveBox.querySelectorAll("[data-family]").forEach(function (el) {
+      el.style.display = el.getAttribute("data-family") === fam ? "" : "none";
+    });
+  }
+
   // Summary
   var LABELS = [
     ["f-position", "Position"], ["f-leather", "Leather"], ["f-hand", "Hand"],
@@ -206,6 +239,7 @@
   }
   function updateSummary() {
     updateStrip();
+    applyColors();
     if (!summary) return;
     var lines = briefLines();
     summary.innerHTML = "";
@@ -247,6 +281,8 @@
 
   renderSizes("");
   updateStrip();
+  applyColors();
+  showGlove("");
 
   // Thank-you state after the Worker redirects back with ?sent=1
   if (new URLSearchParams(window.location.search).get("sent") === "1") {
