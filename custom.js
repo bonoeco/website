@@ -257,7 +257,7 @@
     if (famCache[fam] || typeof Image === "undefined") return;
     var entry = { base: null, layers: {} };
     famCache[fam] = entry;
-    var dir = "img/preview11/";
+    var dir = "img/preview12/";
     var b = new Image();
     b.onload = function () { entry.base = b; drawPhoto(); };
     b.src = dir + fam + "-base.jpg";
