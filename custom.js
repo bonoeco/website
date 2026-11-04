@@ -332,10 +332,13 @@
     if (famCache[fam] || typeof Image === "undefined") return;
     var entry = { base: null, layers: {} };
     famCache[fam] = entry;
-    var dir = "img/preview12/";
+    var dir = "img/preview13/";
     var b = new Image();
     b.onload = function () { entry.base = b; drawPhoto(); };
     b.src = dir + fam + "-base.jpg";
+    var un = new Image();
+    un.onload = function () { entry.under = un; drawPhoto(); };
+    un.src = dir + fam + "-under.webp";
     (PREVIEW_PARTS[fam] || []).forEach(function (part) {
       var im = new Image();
       im.onload = function () { entry.layers[part] = im; drawPhoto(); };
@@ -392,6 +395,20 @@
       offCanvas.height = canvas.height;
       var octx = offCanvas.getContext("2d");
       if (!octx) return;
+      // neutral underlay over the whole silhouette first: any pixel the
+      // part layers do not fully reach then shows blank-glove shading,
+      // never the photo's own color
+      if (entry.under) {
+        octx.globalCompositeOperation = "source-over";
+        octx.clearRect(0, 0, offCanvas.width, offCanvas.height);
+        octx.fillStyle = "#c9c2b4";
+        octx.fillRect(0, 0, offCanvas.width, offCanvas.height);
+        octx.globalCompositeOperation = "multiply";
+        octx.drawImage(entry.under, 0, 0);
+        octx.globalCompositeOperation = "destination-in";
+        octx.drawImage(entry.under, 0, 0);
+        ctx.drawImage(offCanvas, 0, 0);
+      }
       DRAW_ORDER.forEach(function (part) {
         var img = entry.layers[part];
         if (part === "wrist") {
