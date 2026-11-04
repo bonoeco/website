@@ -18,7 +18,7 @@
   var summary = document.getElementById("summary");
   var preview = document.getElementById("preview");
 
-  function setStatus(msg) { if (status) status.textContent = msg; }
+  function setStatus(msg) { if (!status) return; status.textContent = msg; status.classList.toggle("show", !!msg); }
 
   function selectInGroup(container, btn) {
     container.querySelectorAll("[aria-checked]").forEach(function (el) {
@@ -45,6 +45,7 @@
           c.setAttribute("aria-checked", c === card ? "true" : "false");
         });
         document.getElementById("f-position").value = card.getAttribute("data-value");
+        setStatus("");
         if (preview) {
           preview.src = card.getAttribute("data-img");
           preview.alt = card.getAttribute("data-value") + " glove preview";
@@ -76,9 +77,19 @@
   var current = 0;
   function baseReady() { return !!document.getElementById("f-position").value; }
   function goTo(n) {
+    var blocked = false;
     if (n > 0 && !baseReady()) {
-      setStatus("Choose a glove position in step 1 (Base) first.");
+      blocked = true;
+      setStatus("Choose a glove position first — pick one of the glove photos in step 1 (Base), then the other steps open.");
       n = 0;
+      var pg = document.getElementById("position-choices");
+      if (pg) {
+        pg.classList.remove("nudge");
+        void pg.offsetWidth;
+        pg.classList.add("nudge");
+        pg.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(function () { pg.classList.remove("nudge"); }, 1100);
+      }
     }
     current = n;
     tabs.forEach(function (t) {
@@ -88,7 +99,7 @@
       p.classList.toggle("active", Number(p.getAttribute("data-panel")) === n);
     });
     updateSummary();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!blocked) window.scrollTo({ top: 0, behavior: "smooth" });
   }
   tabs.forEach(function (t) {
     t.addEventListener("click", function () { goTo(Number(t.getAttribute("data-step"))); });
