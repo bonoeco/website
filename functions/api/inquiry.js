@@ -2,7 +2,8 @@
 // Route: POST /api/inquiry  (used by contact.html and custom.html)
 //
 // Sends the submission to info.bonoeco@gmail.com through Cloudflare Email
-// Sending, using the EMAIL send_email binding declared in wrangler.toml.
+// Sending, using the EMAIL send_email binding configured in the Pages
+// project settings (Settings -> Bindings).
 // The destination is a verified Email Routing destination address.
 // Nothing is stored in a database; the email is the record.
 
