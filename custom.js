@@ -221,11 +221,11 @@
     famCache[fam] = entry;
     var b = new Image();
     b.onload = function () { entry.base = b; drawPhoto(); };
-    b.src = "img/preview/" + fam + "-base.jpg";
+    b.src = "img/preview2/" + fam + "-base.jpg";
     (PREVIEW_PARTS[fam] || []).forEach(function (part) {
       var im = new Image();
       im.onload = function () { entry.layers[part] = im; drawPhoto(); };
-      im.src = "img/preview/" + fam + "-" + part + ".webp";
+      im.src = "img/preview2/" + fam + "-" + part + ".webp";
     });
   }
 
