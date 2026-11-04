@@ -1,0 +1,9 @@
+name = "website"
+pages_build_output_dir = "."
+compatibility_date = "2026-11-04"
+
+# Email Sending binding used by functions/api/inquiry.js.
+# destination_address must be a verified Email Routing destination.
+[[send_email]]
+name = "EMAIL"
+destination_address = "info.bonoeco@gmail.com"
