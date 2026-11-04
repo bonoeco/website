@@ -183,36 +183,94 @@
     });
   }
 
-  // Live glove illustration: each part recolors as its color is picked,
-  // and the shape family follows the chosen position.
-  var gloveBox = document.getElementById("glove-preview");
-  var VAR_FOR = {
-    "f-web-color": "--c-web", "f-palm-color": "--c-palm", "f-wrist-color": "--c-wrist",
-    "f-binding-color": "--c-binding", "f-welting-color": "--c-welting",
-    "f-lacing-color": "--c-lacing", "f-stitching-color": "--c-stitching",
-    "f-logo-color": "--c-logo"
-  };
-  function applyColors() {
-    if (!gloveBox || !gloveBox.style || !gloveBox.style.setProperty) return;
-    COLOR_FIELDS.forEach(function (pair) {
-      var el = document.getElementById(pair[0]);
-      var name = el ? el.value : "";
-      var v = VAR_FOR[pair[0]];
-      if (!v) return;
-      if (name && HEX[name]) gloveBox.style.setProperty(v, HEX[name]);
-      else gloveBox.style.removeProperty(v);
-    });
-  }
+  // Live photo preview: one real BONOECO glove photo per position family.
+  // Every color part has a shading layer (the part's own light and shadow,
+  // with an alpha mask of exactly that part). Picking a color tints only
+  // that part, multiplied through its shading; unpicked parts keep the
+  // photo's real colors. The photo family follows the chosen position.
   var FAMILY = {
     "Infield": "fielder", "Outfield": "fielder", "Pitcher": "fielder",
     "First base": "firstbase", "Catcher": "catcher", "Training": "training"
   };
-  function showGlove(position) {
-    if (!gloveBox) return;
-    var fam = FAMILY[position] || "fielder";
-    gloveBox.querySelectorAll("[data-family]").forEach(function (el) {
-      el.style.display = el.getAttribute("data-family") === fam ? "" : "none";
+  var PART_FOR = {
+    "f-web-color": "web", "f-palm-color": "palm", "f-wrist-color": "wrist",
+    "f-binding-color": "binding", "f-welting-color": "welting",
+    "f-lacing-color": "lacing", "f-stitching-color": "stitching",
+    "f-logo-color": "logo"
+  };
+  var FIELD_FOR_PART = {};
+  COLOR_FIELDS.forEach(function (pair) { FIELD_FOR_PART[PART_FOR[pair[0]]] = pair[0]; });
+  var DRAW_ORDER = ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing", "logo"];
+  var PREVIEW_PARTS = {
+    "fielder": ["palm", "web", "wrist", "binding", "welting", "lacing", "stitching", "logo"],
+    "catcher": ["palm", "web", "wrist", "binding", "welting", "lacing", "stitching", "logo"],
+    "firstbase": ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing"],
+    "training": ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing"]
+  };
+  var canvas = document.getElementById("glove-canvas");
+  var ctx = null;
+  try { if (canvas && canvas.getContext) ctx = canvas.getContext("2d"); } catch (e) { ctx = null; }
+  var curFamily = "fielder";
+  var famCache = {};
+  var offCanvas = null;
+
+  function loadFamily(fam) {
+    if (famCache[fam] || typeof Image === "undefined") return;
+    var entry = { base: null, layers: {} };
+    famCache[fam] = entry;
+    var b = new Image();
+    b.onload = function () { entry.base = b; drawPhoto(); };
+    b.src = "img/preview/" + fam + "-base.jpg";
+    (PREVIEW_PARTS[fam] || []).forEach(function (part) {
+      var im = new Image();
+      im.onload = function () { entry.layers[part] = im; drawPhoto(); };
+      im.src = "img/preview/" + fam + "-" + part + ".webp";
     });
+  }
+
+  function drawPhoto() {
+    if (!ctx || !canvas) return;
+    var entry = famCache[curFamily];
+    if (!entry || !entry.base) return;
+    try {
+      if (canvas.width !== entry.base.naturalWidth) {
+        canvas.width = entry.base.naturalWidth;
+        canvas.height = entry.base.naturalHeight;
+      }
+      ctx.globalCompositeOperation = "source-over";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(entry.base, 0, 0);
+      if (!offCanvas) offCanvas = document.createElement("canvas");
+      if (!offCanvas.getContext) return;
+      offCanvas.width = canvas.width;
+      offCanvas.height = canvas.height;
+      var octx = offCanvas.getContext("2d");
+      if (!octx) return;
+      DRAW_ORDER.forEach(function (part) {
+        var img = entry.layers[part];
+        if (!img) return;
+        var el = document.getElementById(FIELD_FOR_PART[part]);
+        var name = el ? el.value : "";
+        if (!name || !HEX[name]) return;
+        octx.globalCompositeOperation = "source-over";
+        octx.clearRect(0, 0, offCanvas.width, offCanvas.height);
+        octx.fillStyle = HEX[name];
+        octx.fillRect(0, 0, offCanvas.width, offCanvas.height);
+        octx.globalCompositeOperation = "multiply";
+        octx.drawImage(img, 0, 0);
+        octx.globalCompositeOperation = "destination-in";
+        octx.drawImage(img, 0, 0);
+        ctx.drawImage(offCanvas, 0, 0);
+      });
+    } catch (e) { /* preview is decorative; the brief still records colors */ }
+  }
+
+  function applyColors() { drawPhoto(); }
+
+  function showGlove(position) {
+    curFamily = FAMILY[position] || "fielder";
+    loadFamily(curFamily);
+    drawPhoto();
   }
 
   // Summary
