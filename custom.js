@@ -111,6 +111,33 @@
     b.addEventListener("click", function () { goTo(Math.max(current - 1, 0)); });
   });
 
+  // Live color strip under the preview
+  var HEX = {};
+  PALETTE.forEach(function (p) { HEX[p[0]] = p[1]; });
+  var COLOR_FIELDS = [
+    ["f-web-color", "Web"], ["f-palm-color", "Palm"], ["f-wrist-color", "Wrist"],
+    ["f-binding-color", "Binding"], ["f-welting-color", "Welting"],
+    ["f-lacing-color", "Lacing"], ["f-stitching-color", "Stitching"],
+    ["f-logo-color", "Logo"]
+  ];
+  function updateStrip() {
+    var strip = document.getElementById("color-strip");
+    if (!strip) return;
+    strip.innerHTML = "";
+    COLOR_FIELDS.forEach(function (pair) {
+      var el = document.getElementById(pair[0]);
+      var val = el ? el.value : "";
+      var pill = document.createElement("span");
+      pill.className = "cs" + (val ? "" : " empty");
+      var dot = document.createElement("span");
+      dot.className = "dot";
+      if (val && HEX[val]) dot.style.background = HEX[val];
+      pill.appendChild(dot);
+      pill.appendChild(document.createTextNode(pair[1] + ": " + (val || "\u2014")));
+      strip.appendChild(pill);
+    });
+  }
+
   // Summary
   var LABELS = [
     ["f-position", "Position"], ["f-leather", "Leather"], ["f-hand", "Hand"],
@@ -134,6 +161,7 @@
     return lines;
   }
   function updateSummary() {
+    updateStrip();
     if (!summary) return;
     var lines = briefLines();
     summary.innerHTML = "";
@@ -172,6 +200,8 @@
       }
     });
   }
+
+  updateStrip();
 
   // Thank-you state after the Worker redirects back with ?sent=1
   if (new URLSearchParams(window.location.search).get("sent") === "1") {
