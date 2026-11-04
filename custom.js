@@ -75,9 +75,8 @@
       sizeNote.textContent = note;
       sizeNote.style.display = note ? "" : "none";
     }
-    updateSummary();
   }
-  renderSizes("");
+
 
   // Position cards with preview swap
   var posGroup = document.getElementById("position-choices");
@@ -90,6 +89,7 @@
         document.getElementById("f-position").value = card.getAttribute("data-value");
         setStatus("");
         renderSizes(card.getAttribute("data-value"));
+        updateSummary();
         if (preview) {
           preview.src = card.getAttribute("data-img");
           preview.alt = card.getAttribute("data-value") + " glove preview";
@@ -245,6 +245,7 @@
     });
   }
 
+  renderSizes("");
   updateStrip();
 
   // Thank-you state after the Worker redirects back with ?sent=1
