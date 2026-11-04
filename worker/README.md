@@ -11,3 +11,12 @@ this repo — this copy is the source of record).
   Cloudflare Email Routing destination.
 - Handles POSTs from contact.html and custom.html, then redirects to
   `?sent=1` on the originating page.
+
+## Chat assistant
+
+The same Worker also serves POST /api/chat for the site's chat widget
+(chat.js, loaded on every page). It answers from a knowledge base built
+into worker.js using the Worker's AI binding (Workers AI,
+@cf/meta/llama-3.1-8b-instruct). It needs the dashboard route
+bonoeco.com/api/chat* -> bonoeco-forms, in addition to the
+/api/inquiry* route above.
