@@ -186,9 +186,9 @@
   // Live photo preview: one BONOECO glove per position family, and for
   // fielders one per web style — picking a web style in step 2 switches
   // the glove to one that actually has that web. Every color part has a
-  // shading layer (the part's own light and shadow, with an alpha mask of
-  // exactly that part). Picking a color tints only that part, multiplied
-  // through its shading; unpicked parts keep the photo's real colors.
+  // shading layer normalized to remove the photo's own color, so the
+  // glove starts as one blank neutral glove; picking a color covers that
+  // part at full strength, and only that part.
   var FAMILY = {
     "Infield": "fielder", "Outfield": "fielder", "Pitcher": "fielder",
     "First base": "firstbase", "Catcher": "catcher", "Training": "training"
@@ -236,11 +236,11 @@
     famCache[fam] = entry;
     var b = new Image();
     b.onload = function () { entry.base = b; drawPhoto(); };
-    b.src = "img/preview4/" + fam + "-base.jpg";
+    b.src = "img/preview5/" + fam + "-base.jpg";
     (PREVIEW_PARTS[fam] || []).forEach(function (part) {
       var im = new Image();
       im.onload = function () { entry.layers[part] = im; drawPhoto(); };
-      im.src = "img/preview4/" + fam + "-" + part + ".webp";
+      im.src = "img/preview5/" + fam + "-" + part + ".webp";
     });
   }
 
@@ -275,10 +275,12 @@
         if (!img) return;
         var el = document.getElementById(FIELD_FOR_PART[part]);
         var name = el ? el.value : "";
-        if (!name || !HEX[name]) return;
+        // unpicked parts render in the blank neutral tone, so the glove
+        // starts colorless and a picked color is what covers the part
+        var fill = (name && HEX[name]) ? HEX[name] : "#c9c2b4";
         octx.globalCompositeOperation = "source-over";
         octx.clearRect(0, 0, offCanvas.width, offCanvas.height);
-        octx.fillStyle = HEX[name];
+        octx.fillStyle = fill;
         octx.fillRect(0, 0, offCanvas.width, offCanvas.height);
         octx.globalCompositeOperation = "multiply";
         octx.drawImage(img, 0, 0);
