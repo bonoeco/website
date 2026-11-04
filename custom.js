@@ -204,6 +204,7 @@
   var DRAW_ORDER = ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing", "logo"];
   var ALL8 = ["palm", "web", "wrist", "binding", "welting", "lacing", "stitching", "logo"];
   var NO_LOGO = ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing"];
+  var NO_STITCH = ["palm", "web", "wrist", "binding", "welting", "lacing", "logo"];
   var PREVIEW_PARTS = {
     "fielder": ALL8,  // Two Piece web (the default fielder glove)
     "fielder-iweb": ALL8,
@@ -215,8 +216,30 @@
     "fielder-shield": ALL8,
     "catcher": ALL8,
     "firstbase": NO_LOGO,
-    "training": NO_LOGO
+    "training": NO_LOGO,
+    "fielder-b": ALL8,
+    "fielder-iweb-b": NO_LOGO,
+    "fielder-hweb-b": NO_LOGO,
+    "fielder-vweb-b": NO_LOGO,
+    "fielder-cross-b": NO_LOGO,
+    "fielder-basket-b": NO_LOGO,
+    "fielder-trapeze-b": ALL8,
+    "fielder-shield-b": ALL8,
+    "catcher-b": ALL8,
+    "firstbase-b": NO_STITCH,
+    "training-b": NO_STITCH
   };
+  // two views per glove: side "a" (the default photo) and side "b" (the
+  // glove turned over), with the honest name of each side per glove
+  var SIDE_NAMES = {
+    "fielder": ["Back side", "Palm side"], "fielder-iweb": ["Back side", "Palm side"],
+    "fielder-hweb": ["Back side", "Palm side"], "fielder-vweb": ["Palm side", "Back side"],
+    "fielder-cross": ["Back side", "Palm side"], "fielder-basket": ["Palm side", "Back side"],
+    "fielder-trapeze": ["Back side", "Palm side"], "fielder-shield": ["Back side", "Palm side"],
+    "catcher": ["Front side", "Back side"], "firstbase": ["Palm side", "Back side"],
+    "training": ["Palm side", "Back side"]
+  };
+  var viewSide = "a";
   var WEB_VARIANT = {
     "I-Web": "fielder-iweb", "H-Web": "fielder-hweb", "V-Web": "fielder-vweb",
     "Cross Web": "fielder-cross", "Trapeze / T-Web": "fielder-trapeze",
@@ -234,24 +257,43 @@
     if (famCache[fam] || typeof Image === "undefined") return;
     var entry = { base: null, layers: {} };
     famCache[fam] = entry;
+    var dir = /-b$/.test(fam) ? "img/preview6/" : "img/preview5/";
     var b = new Image();
     b.onload = function () { entry.base = b; drawPhoto(); };
-    b.src = "img/preview5/" + fam + "-base.jpg";
+    b.src = dir + fam + "-base.jpg";
     (PREVIEW_PARTS[fam] || []).forEach(function (part) {
       var im = new Image();
       im.onload = function () { entry.layers[part] = im; drawPhoto(); };
-      im.src = "img/preview5/" + fam + "-" + part + ".webp";
+      im.src = dir + fam + "-" + part + ".webp";
     });
   }
 
-  function currentKey() {
+  function baseKey() {
     if (curFamily !== "fielder") return curFamily;
     var w = document.getElementById("f-web");
     return WEB_VARIANT[w ? w.value : ""] || "fielder";
   }
 
+  function currentKey() {
+    var k = baseKey();
+    return viewSide === "b" ? k + "-b" : k;
+  }
+
+  function updateSideButtons() {
+    var names = SIDE_NAMES[baseKey()] || ["Side 1", "Side 2"];
+    [["pv-side-a", "a", names[0]], ["pv-side-b", "b", names[1]]].forEach(function (cfg) {
+      var btn = document.getElementById(cfg[0]);
+      if (!btn || !btn.style) return;
+      btn.textContent = cfg[2];
+      var on = viewSide === cfg[1];
+      btn.style.background = on ? "#142d25" : "transparent";
+      btn.style.color = on ? "#fff" : "inherit";
+    });
+  }
+
   function drawPhoto() {
     if (!ctx || !canvas) return;
+    updateSideButtons();
     var key = currentKey();
     var entry = famCache[key];
     if (!entry) { loadFamily(key); entry = famCache[key]; }
@@ -362,6 +404,16 @@
       }
     });
   }
+
+  [["pv-side-a", "a"], ["pv-side-b", "b"]].forEach(function (cfg) {
+    var btn = document.getElementById(cfg[0]);
+    if (btn) btn.addEventListener("click", function () {
+      viewSide = cfg[1];
+      loadFamily(currentKey());
+      drawPhoto();
+    });
+  });
+  updateSideButtons();
 
   renderSizes("");
   updateStrip();
