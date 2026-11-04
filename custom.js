@@ -183,12 +183,11 @@
     });
   }
 
-  // Live preview: one photorealistic glove render per position family,
-  // front view in the Glove Works style. Every color part has a shading
-  // layer (the part's own light and shadow, with an alpha mask of that
-  // part). Picking a color tints only that part, multiplied through its
-  // shading; unpicked parts keep the render's colors. The family follows
-  // the chosen position.
+  // Live photo preview: one real BONOECO glove photo per position family.
+  // Every color part has a shading layer (the part's own light and shadow,
+  // with an alpha mask of exactly that part). Picking a color tints only
+  // that part, multiplied through its shading; unpicked parts keep the
+  // photo's real colors. The photo family follows the chosen position.
   var FAMILY = {
     "Infield": "fielder", "Outfield": "fielder", "Pitcher": "fielder",
     "First base": "firstbase", "Catcher": "catcher", "Training": "training"
@@ -203,10 +202,10 @@
   COLOR_FIELDS.forEach(function (pair) { FIELD_FOR_PART[PART_FOR[pair[0]]] = pair[0]; });
   var DRAW_ORDER = ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing", "logo"];
   var PREVIEW_PARTS = {
-    "fielder": ["palm", "web", "wrist", "binding", "welting", "lacing", "stitching"],
-    "catcher": ["palm", "web", "wrist", "binding", "lacing", "stitching"],
+    "fielder": ["palm", "web", "wrist", "binding", "welting", "lacing", "stitching", "logo"],
+    "catcher": ["palm", "web", "wrist", "binding", "welting", "lacing", "stitching", "logo"],
     "firstbase": ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing"],
-    "training": ["palm", "web", "wrist", "binding", "lacing", "stitching"]
+    "training": ["palm", "web", "wrist", "binding", "welting", "stitching", "lacing"]
   };
   var canvas = document.getElementById("glove-canvas");
   var ctx = null;
@@ -221,11 +220,11 @@
     famCache[fam] = entry;
     var b = new Image();
     b.onload = function () { entry.base = b; drawPhoto(); };
-    b.src = "img/preview2/" + fam + "-base.jpg";
+    b.src = "img/preview3/" + fam + "-base.jpg";
     (PREVIEW_PARTS[fam] || []).forEach(function (part) {
       var im = new Image();
       im.onload = function () { entry.layers[part] = im; drawPhoto(); };
-      im.src = "img/preview2/" + fam + "-" + part + ".webp";
+      im.src = "img/preview3/" + fam + "-" + part + ".webp";
     });
   }
 
