@@ -29,12 +29,55 @@
     updateSummary();
   }
 
-  // Chips (single-select groups)
-  document.querySelectorAll(".chips[data-target]").forEach(function (group) {
+  // Chips (single-select groups; the size group is rendered per position)
+  document.querySelectorAll(".chips[data-target]:not(#size-choices)").forEach(function (group) {
     group.querySelectorAll(".chip").forEach(function (chip) {
       chip.addEventListener("click", function () { selectInGroup(group, chip); });
     });
   });
+
+  // Sizes depend on the position. Catcher mitts are sized by circumference.
+  var SIZES = {
+    "Infield": [["10.5 in", "10.5\u2033"], ["11 in", "11\u2033"], ["11.25 in", "11.25\u2033"], ["11.5 in", "11.5\u2033"], ["11.75 in", "11.75\u2033"], ["12 in", "12\u2033"]],
+    "Outfield": [["12.5 in", "12.5\u2033"], ["12.75 in", "12.75\u2033"], ["13 in", "13\u2033"]],
+    "Pitcher": [["11.5 in", "11.5\u2033"], ["11.75 in", "11.75\u2033"], ["12 in", "12\u2033"], ["12.25 in", "12.25\u2033"], ["12.5 in", "12.5\u2033"]],
+    "Catcher": [["31 in circumference", "31\u2033"], ["31.5 in circumference", "31.5\u2033"], ["32 in circumference", "32\u2033"], ["32.5 in circumference", "32.5\u2033"], ["33 in circumference", "33\u2033"], ["33.5 in circumference", "33.5\u2033"], ["34 in circumference", "34\u2033"], ["34.5 in circumference", "34.5\u2033"]],
+    "First base": [["12.5 in", "12.5\u2033"], ["12.75 in", "12.75\u2033"], ["13 in", "13\u2033"], ["13.5 in", "13.5\u2033"]],
+    "Training": [["9.5 in", "9.5\u2033"]]
+  };
+  var SIZE_NOTES = {
+    "Catcher": "Catcher mitts are sized by circumference (around the mitt), not by length.",
+    "Training": "Training (pancake) gloves are made in 9.5 in."
+  };
+  var sizeGroup = document.getElementById("size-choices");
+  var sizeNote = document.getElementById("size-note");
+  function renderSizes(position) {
+    if (!sizeGroup) return;
+    sizeGroup.innerHTML = "";
+    var list = SIZES[position] || [];
+    var input = document.getElementById("f-size");
+    var keep = false;
+    list.forEach(function (pair) { if (input && input.value === pair[0]) keep = true; });
+    if (input && !keep) input.value = "";
+    list.forEach(function (pair) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", input && input.value === pair[0] ? "true" : "false");
+      b.setAttribute("data-value", pair[0]);
+      b.textContent = pair[1];
+      b.addEventListener("click", function () { selectInGroup(sizeGroup, b); });
+      sizeGroup.appendChild(b);
+    });
+    if (sizeNote) {
+      var note = SIZE_NOTES[position] || (position ? "" : "Pick a position above \u2014 the size list adjusts to it.");
+      sizeNote.textContent = note;
+      sizeNote.style.display = note ? "" : "none";
+    }
+    updateSummary();
+  }
+  renderSizes("");
 
   // Position cards with preview swap
   var posGroup = document.getElementById("position-choices");
@@ -46,6 +89,7 @@
         });
         document.getElementById("f-position").value = card.getAttribute("data-value");
         setStatus("");
+        renderSizes(card.getAttribute("data-value"));
         if (preview) {
           preview.src = card.getAttribute("data-img");
           preview.alt = card.getAttribute("data-value") + " glove preview";
