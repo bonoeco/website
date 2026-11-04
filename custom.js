@@ -266,6 +266,11 @@
       im.onload = function () { entry.layers[part] = im; drawPhoto(); };
       im.src = dir + fam + "-" + part + ".webp";
     });
+    // alternate wrist layer: the same glove with a velcro strap, swapped
+    // in when the visitor picks the Velcro wrist-strap option
+    var wa = new Image();
+    wa.onload = function () { entry.layers.wristalt = wa; drawPhoto(); };
+    wa.src = "img/preview7/" + fam + "-wristalt.webp";
   }
 
   function baseKey() {
@@ -314,6 +319,10 @@
       if (!octx) return;
       DRAW_ORDER.forEach(function (part) {
         var img = entry.layers[part];
+        if (part === "wrist") {
+          var strapEl = document.getElementById("f-wrist-type");
+          if (strapEl && strapEl.value === "Velcro" && entry.layers.wristalt) img = entry.layers.wristalt;
+        }
         if (!img) return;
         var el = document.getElementById(FIELD_FOR_PART[part]);
         var name = el ? el.value : "";
