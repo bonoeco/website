@@ -1,13 +1,46 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Custom Glove Builder | BONOECO</title><meta name="description" content="Build a BONOECO custom baseball glove step by step: base model, leather, shell colors, trim and personalization. Send the brief and we reply with price and timing."><meta property="og:type" content="website"><meta property="og:site_name" content="BONOECO"><meta property="og:title" content="Custom Baseball Glove Builder | BONOECO"><meta property="og:description" content="Build a BONOECO custom baseball glove step by step and send the brief for review."><meta property="og:url" content="https://bonoeco.com/custom.html"><meta property="og:image" content="https://bonoeco.com/img/logob.png"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Custom Baseball Glove Builder | BONOECO"><meta name="twitter:description" content="Build a BONOECO custom baseball glove step by step and send the brief for review."><meta name="twitter:image" content="https://bonoeco.com/img/logob.png"><link rel="canonical" href="https://bonoeco.com/custom.html"><link rel="icon" type="image/png" href="img/logob.png"><link rel="apple-touch-icon" href="img/logob.png"><link rel="manifest" href="site.webmanifest"><link rel="stylesheet" href="styles-v2.css?v=3"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Custom Baseball Glove Builder | BONOECO","url":"https://bonoeco.com/custom.html","isPartOf":{"@id":"https://bonoeco.com/#website"},"about":{"@type":"Thing","name":"Baseball gloves"},"inLanguage":"en"}</script><style>
-.builder{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start}
+.builder{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:22px;align-items:start}
 @media (max-width:900px){.builder{grid-template-columns:1fr}}
-.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
-.steps button{border:1px solid #142d25;background:#fff;color:#142d25;padding:9px 14px;border-radius:999px;font:inherit;cursor:pointer}
-.steps button[aria-selected="true"]{background:#142d25;color:#fff}
+.stage{background:#f7f4ec;border:1px solid #e6e9df;border-radius:16px;padding:18px;position:sticky;top:16px}
+@media (max-width:900px){.stage{position:static}}
+.stage-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 10px}
+.stage-head strong{font-size:1.08rem;color:#142d25}
+.stage-head span{font-size:.82rem;color:#7a7263}
+.glove-preview{background:#fff;border:1px solid #e6e9df;border-radius:12px;padding:10px;overflow:hidden}
+.glove-preview canvas{width:100%;height:auto;display:block;border-radius:6px;transition:transform .25s ease}
+.stage-tools{display:flex;gap:8px;margin:10px 0 2px;align-items:stretch}
+.sidebtn{flex:1;padding:8px 10px;border-radius:999px;border:1.5px solid #b6935b;background:transparent;color:#142d25;font:inherit;cursor:pointer}
+.zoomgrp{display:flex;gap:6px}
+.zoombtn{width:42px;border-radius:999px;border:1.5px solid #ddd6c4;background:#fff;color:#142d25;font:inherit;font-size:1.05rem;cursor:pointer}
+.stage-info h3{margin:14px 0 6px;font-size:.95rem;color:#142d25}
+.stage-info ul{margin:0;padding-left:18px;font-size:.92rem}
+.stage-info .muted{font-size:.85rem}
+.strip{display:flex;flex-wrap:wrap;gap:6px}
+.strip .cs{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd6c4;border-radius:999px;padding:3px 10px 3px 4px;font-size:.82rem;background:#fff;color:#142d25}
+.strip .dot{width:16px;height:16px;border-radius:50%;border:1px solid #c9c2ae;flex:none}
+.strip .cs.empty{opacity:.55}
+.strip .cs.empty .dot{background:repeating-linear-gradient(45deg,#fff 0 3px,#e7e0cb 3px 6px)}
+.panelbox{background:#fff;border:1px solid #e0dccf;border-radius:16px;display:flex;flex-direction:column;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:hidden}
+@media (max-width:900px){.panelbox{position:static;max-height:none}}
+.sectabs{display:flex;gap:6px;padding:12px 12px 8px}
+.sectab{flex:1;border:1.5px solid #142d25;background:#fff;color:#142d25;border-radius:999px;padding:8px 2px;font:inherit;font-size:.88rem;cursor:pointer}
+.sectab[aria-selected="true"]{background:#142d25;color:#fff}
+.steps{display:flex;gap:5px;padding:0 12px 10px}
+.steps button{flex:1;border:1px solid #ddd6c4;background:#faf7ef;color:#142d25;padding:5px 2px;border-radius:8px;font:inherit;font-size:.76rem;cursor:pointer}
+.steps button[aria-selected="true"]{border-color:#b6935b;background:#f5efe2;font-weight:700}
 .steps button:disabled{opacity:.45;cursor:not-allowed}
-.panel{display:none}.panel.active{display:block}.strip-title{margin:12px 0 6px;font-size:.95rem}.strip{display:flex;flex-wrap:wrap;gap:6px}.glove-preview{background:#fff;border:1px solid #e6e9df;border-radius:12px;padding:10px}.glove-preview canvas{width:100%;height:auto;display:block;border-radius:6px}.strip .cs{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd6c4;border-radius:999px;padding:3px 10px 3px 4px;font-size:.82rem;background:#fff;color:#142d25}.strip .dot{width:16px;height:16px;border-radius:50%;border:1px solid #c9c2ae;flex:none}.strip .cs.empty{opacity:.55}.strip .cs.empty .dot{background:repeating-linear-gradient(45deg,#fff 0 3px,#e7e0cb 3px 6px)}.builder-status{display:none;margin:0 0 14px;padding:10px 14px;border:1px solid #b6935b;background:#f5efe2;border-radius:10px;color:#142d25;font-weight:600}.builder-status.show{display:block}@keyframes bnc-nudge{0%,100%{box-shadow:0 0 0 0 rgba(182,147,91,0)}30%,70%{box-shadow:0 0 0 4px rgba(182,147,91,.85)}}.choices.nudge{animation:bnc-nudge .45s ease-in-out 2;border-radius:12px}
+.stephead{padding:2px 16px 10px;border-bottom:1px solid #eee7d6}
+#step-kicker{font-size:.7rem;letter-spacing:.09em;color:#b6935b;font-weight:700;text-transform:uppercase}
+#step-title{font-size:1.18rem;font-weight:700;color:#142d25;line-height:1.25}
+#step-sel{font-size:.85rem;color:#5c665e;min-height:1.05em}
+.panelscroll{overflow-y:auto;padding:14px 16px 16px;flex:1}
+.panel{display:none}.panel.active{display:block}
 .panel h3{margin:18px 0 8px}.panel h3:first-child{margin-top:0}
-.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.builder-status{display:none;margin:0 0 14px;padding:10px 14px;border:1px solid #b6935b;background:#f5efe2;border-radius:10px;color:#142d25;font-weight:600}
+.builder-status.show{display:block}
+@keyframes bnc-nudge{0%,100%{box-shadow:0 0 0 0 rgba(182,147,91,0)}30%,70%{box-shadow:0 0 0 4px rgba(182,147,91,.85)}}
+.choices.nudge{animation:bnc-nudge .45s ease-in-out 2;border-radius:12px}
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .choice{border:2px solid #ddd6c4;border-radius:12px;padding:8px;background:#fff;cursor:pointer;text-align:center}
 .choice img{width:100%;height:110px;object-fit:cover;border-radius:8px;display:block}
 .choice span{display:block;margin-top:6px;font-size:.92rem}
@@ -15,16 +48,16 @@
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:2px solid #ddd6c4;background:#fff;border-radius:999px;padding:7px 14px;cursor:pointer;font:inherit}
 .chip[aria-checked="true"]{border-color:#b6935b;background:#f5efe2}
-.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:8px}
 .swatch{width:40px;height:40px;border-radius:50%;border:2px solid #ddd6c4;cursor:pointer;padding:0}
 .swatch[aria-checked="true"]{border-color:#b6935b;box-shadow:0 0 0 2px #fff,0 0 0 4px #b6935b}
-.side{position:sticky;top:16px;background:#faf7ef;border:1px solid #e6e9df;border-radius:14px;padding:16px}
-.side img{width:100%;border-radius:10px;display:block}
-.side h3{margin:12px 0 6px}
-.side ul{margin:0;padding-left:18px;font-size:.92rem}
-.side .muted{font-size:.85rem}
 .navrow{display:flex;justify-content:space-between;margin-top:22px}
-</style></head><body><a class="skip" href="#main">Skip to content</a><header><a class="brand" href="index.html"><img src="img/logow.png" alt="BONOECO">BONOECO</a><nav aria-label="Main navigation"><a href="index.html">Home</a><a href="products.html">Gloves</a><a href="catalog.html">Gallery</a><a href="oem.html">Wholesale &amp; OEM</a><a href="blog.html">Blog</a><a href="about.html">About</a><a href="contact.html">Contact</a></nav></header><main id="main"><section class="wrap"><p class="eyebrow">BONOECO / Custom</p><h1>Build your glove, step by step.</h1><p>Pick a base, choose your leather and colors, add your name or logo, then send the brief. We review every brief by hand and reply with the confirmed specification, price and timing. No payment is taken on this page.</p><form id="custom-form" method="POST" action="/api/inquiry"><input type="hidden" name="_page" value="custom"><input type="text" name="website" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true"><div class="builder"><div><div class="steps" role="tablist" aria-label="Builder steps"><button type="button" role="tab" data-step="0" aria-selected="true">1 · Base</button><button type="button" role="tab" data-step="1" aria-selected="false">2 · Shell</button><button type="button" role="tab" data-step="2" aria-selected="false">3 · Trim</button><button type="button" role="tab" data-step="3" aria-selected="false">4 · Personalize</button><button type="button" role="tab" data-step="4" aria-selected="false">5 · Send brief</button></div><p id="custom-status" role="status" class="builder-status"></p>
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:#142d25}
+#bar-note{color:#e9e2cf;font-size:.85rem}
+#bar-action{background:#b6935b;color:#fff;border:0;border-radius:999px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header><a class="brand" href="index.html"><img src="img/logow.png" alt="BONOECO">BONOECO</a><nav aria-label="Main navigation"><a href="index.html">Home</a><a href="products.html">Gloves</a><a href="catalog.html">Gallery</a><a href="oem.html">Wholesale &amp; OEM</a><a href="blog.html">Blog</a><a href="about.html">About</a><a href="contact.html">Contact</a></nav></header><main id="main"><section class="wrap"><p class="eyebrow">BONOECO / Custom</p><h1>Build your glove, step by step.</h1><p>Pick a base, choose your leather and colors, add your name or logo, then send the brief. We review every brief by hand and reply with the confirmed specification, price and timing. No payment is taken on this page.</p><form id="custom-form" method="POST" action="/api/inquiry"><input type="hidden" name="_page" value="custom"><input type="text" name="website" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true"><div class="builder">
+<div class="stage"><div class="stage-head"><strong id="stage-pos">Custom glove builder</strong><span>Live preview</span></div><div id="glove-preview" class="glove-preview"><canvas id="glove-canvas" width="760" height="704" role="img" aria-label="Live color preview on a real BONOECO glove photo"></canvas></div><div class="stage-tools"><button type="button" class="sidebtn" id="pv-side-a">Back side</button><button type="button" class="sidebtn" id="pv-side-b">Palm side</button><div class="zoomgrp"><button type="button" class="zoombtn" id="zoom-out" aria-label="Zoom out">&minus;</button><button type="button" class="zoombtn" id="zoom-in" aria-label="Zoom in">+</button></div></div><div class="stage-info"><h3>Your colors</h3><div id="color-strip" class="strip"></div><h3>Your brief so far</h3><ul id="summary"><li>Choose a position to begin.</li></ul><p class="muted">The preview glove starts blank and follows your choices — pick a web style and it switches to a glove with that exact web; pick a color and it covers that exact part, on both sides. Colors are a guide; we confirm the exact leather shades with you before production.</p></div></div>
+<div class="panelbox"><div class="sectabs" role="tablist" aria-label="Builder sections"><button type="button" class="sectab" data-goto="0" aria-selected="true">Base</button><button type="button" class="sectab" data-goto="1" aria-selected="false">Colors</button><button type="button" class="sectab" data-goto="3" aria-selected="false">Personalize</button><button type="button" class="sectab" data-goto="4" aria-selected="false">Send</button></div><div class="steps" role="tablist" aria-label="Builder steps"><button type="button" role="tab" data-step="0" aria-selected="true">1 · Base</button><button type="button" role="tab" data-step="1" aria-selected="false">2 · Shell</button><button type="button" role="tab" data-step="2" aria-selected="false">3 · Trim</button><button type="button" role="tab" data-step="3" aria-selected="false">4 · Personalize</button><button type="button" role="tab" data-step="4" aria-selected="false">5 · Send brief</button></div><div class="stephead"><div id="step-kicker">Step 1 of 5</div><div id="step-title">Base</div><div id="step-sel"></div></div><div class="panelscroll"><p id="custom-status" role="status" class="builder-status"></p>
 <section class="panel active" data-panel="0"><h3>Glove position</h3><div class="choices" id="position-choices" role="radiogroup" aria-label="Glove position">
 <button type="button" class="choice" data-value="Infield" data-img="img/catalog/infield-black-gold.jpg" role="radio" aria-checked="false"><img src="img/catalog/infield-black-gold.jpg" alt="Infield glove"><span>Infield</span></button>
 <button type="button" class="choice" data-value="Outfield" data-img="img/catalog/outfield-black-tan.jpg" role="radio" aria-checked="false"><img src="img/catalog/outfield-black-tan.jpg" alt="Outfield glove"><span>Outfield</span></button>
@@ -85,8 +118,7 @@
 <div class="actions"><button class="btn" type="submit">Send custom inquiry</button><button class="btn secondary" type="button" id="copy-custom">Copy brief</button></div>
 <p class="muted">Your brief is emailed to BONOECO when you submit. We reply with the confirmed specification, price and timing.</p>
 <div class="navrow"><button class="btn secondary" type="button" data-prev>Back</button><span></span></div></section>
-</div>
-<aside class="side"><h3 class="strip-title">Color preview</h3><div id="glove-preview" class="glove-preview"><canvas id="glove-canvas" width="760" height="704" role="img" aria-label="Live color preview on a real BONOECO glove photo"></canvas></div><div style="display:flex;gap:8px;margin:10px 0 2px"><button type="button" id="pv-side-a" style="flex:1;padding:8px 10px;border-radius:999px;border:1px solid #b6935b;background:#142d25;color:#fff;font:inherit;cursor:pointer">Back side</button><button type="button" id="pv-side-b" style="flex:1;padding:8px 10px;border-radius:999px;border:1px solid #b6935b;background:transparent;color:inherit;font:inherit;cursor:pointer">Palm side</button></div><p class="muted">The preview glove starts blank and follows your choices — pick a web style in step 2 and it switches to a glove with that exact web; pick a color and it covers that exact part. Use the side buttons to turn the glove over: your colors show on both sides. Like any screen, colors may vary slightly from the finished leather.</p><h3 class="strip-title">Your colors</h3><div id="color-strip" class="strip"></div><h3>Your brief so far</h3><ul id="summary"><li>Choose a position to begin.</li></ul><p class="muted">Colors are a guide. We confirm the exact leather shades with you before production.</p></aside>
+</div><div class="bar"><span id="bar-note">Step 1 of 5 — Base</span><button type="button" id="bar-action">Review &amp; send brief</button></div></div>
 </div></form>
 <h2>How it works</h2><ol><li>Build the brief in five short steps.</li><li>Send it to BONOECO.</li><li>We confirm the specification, price and delivery time by email.</li><li>Production starts after your confirmation.</li></ol>
-</section></main><footer><div><strong>BONOECO</strong><br>Baseball gloves. Personal orders. Brand projects.</div><div><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><br><a href="mailto:info.bonoeco@gmail.com">info.bonoeco@gmail.com</a></div><div>© 2026 BONOECO</div></footer><script src="custom.js?v=19" defer></script><script src="chat.js" defer></script></body></html>
+</section></main><footer><div><strong>BONOECO</strong><br>Baseball gloves. Personal orders. Brand projects.</div><div><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><br><a href="mailto:info.bonoeco@gmail.com">info.bonoeco@gmail.com</a></div><div>© 2026 BONOECO</div></footer><script src="custom.js?v=20" defer></script><script src="chat.js" defer></script></body></html>

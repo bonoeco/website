@@ -156,6 +156,81 @@
     b.addEventListener("click", function () { goTo(Math.max(current - 1, 0)); });
   });
 
+  // Panel chrome in the 44-style layout: section tabs (Base / Colors /
+  // Personalize / Send) jump to the section's first step; the step header
+  // shows the step name and this step's chosen values; the pinned bottom
+  // bar reviews/sends the brief. All decorative — the brief works without it.
+  document.querySelectorAll(".sectab").forEach(function (b) {
+    b.addEventListener("click", function () { goTo(Number(b.getAttribute("data-goto")) || 0); });
+  });
+  var barAct = document.getElementById("bar-action");
+  if (barAct) barAct.addEventListener("click", function () {
+    if (current !== 4) goTo(4);
+    // on the Send step the button is type=submit and sends natively
+  });
+  var STEP_NAMES = ["Base", "Shell", "Trim", "Personalize", "Send brief"];
+  var STEP_FIELDS = [
+    ["f-position", "f-leather", "f-hand", "f-size"],
+    ["f-web", "f-web-color", "f-palm-color", "f-wrist-color", "f-wrist-type"],
+    ["f-binding-color", "f-welting-color", "f-lacing-color", "f-stitching-color"],
+    ["f-logo", "f-logo-color"],
+    []
+  ];
+  function syncChrome() {
+    try {
+      var lo = {};
+      LABELS.forEach(function (p) { lo[p[0]] = p[1]; });
+      var kick = document.getElementById("step-kicker");
+      if (kick) kick.textContent = "Step " + (current + 1) + " of 5";
+      var title = document.getElementById("step-title");
+      if (title) title.textContent = STEP_NAMES[current] || "";
+      var sel = document.getElementById("step-sel");
+      if (sel) {
+        var parts = [];
+        (STEP_FIELDS[current] || []).forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el && el.value) parts.push((lo[id] || id) + ": " + el.value);
+        });
+        if (current === 3) {
+          var th = document.getElementById("thumb-text");
+          if (th && th.value) parts.push("Thumb: " + th.value);
+          var ln = document.getElementById("lining-text");
+          if (ln && ln.value) parts.push("Lining: " + ln.value);
+        }
+        sel.textContent = parts.length ? parts.join(" \u00b7 ")
+          : (current === 4 ? "Add your market and email, then send." : "Nothing selected yet on this step.");
+      }
+      document.querySelectorAll(".sectab").forEach(function (b) {
+        var first = Number(b.getAttribute("data-goto")) || 0;
+        var last = first === 1 ? 2 : first;
+        b.setAttribute("aria-selected", current >= first && current <= last ? "true" : "false");
+      });
+      var note = document.getElementById("bar-note");
+      if (note) note.textContent = "Step " + (current + 1) + " of 5 \u2014 " + (STEP_NAMES[current] || "");
+      var act = document.getElementById("bar-action");
+      if (act) {
+        if (current === 4) { act.textContent = "Send custom inquiry"; act.setAttribute("type", "submit"); }
+        else { act.textContent = "Review & send brief"; act.setAttribute("type", "button"); }
+      }
+      var sp = document.getElementById("stage-pos");
+      if (sp) {
+        var pos = document.getElementById("f-position");
+        sp.textContent = pos && pos.value ? "Custom glove \u2014 " + pos.value : "Custom glove builder";
+      }
+    } catch (e) { /* panel chrome is decorative */ }
+  }
+
+  // Preview zoom (the 44-style stage has + / - controls)
+  var zoom = 1;
+  [["zoom-in", 0.2], ["zoom-out", -0.2]].forEach(function (cfg) {
+    var zb = document.getElementById(cfg[0]);
+    if (zb) zb.addEventListener("click", function () {
+      zoom = Math.min(1.8, Math.max(0.6, Math.round((zoom + cfg[1]) * 10) / 10));
+      var c = document.getElementById("glove-canvas");
+      if (c && c.style) c.style.transform = zoom === 1 ? "" : "scale(" + zoom + ")";
+    });
+  });
+
   // Live color strip under the preview
   var HEX = {};
   PALETTE.forEach(function (p) { HEX[p[0]] = p[1]; });
@@ -375,6 +450,7 @@
   function updateSummary() {
     updateStrip();
     applyColors();
+    syncChrome();
     if (!summary) return;
     var lines = briefLines();
     summary.innerHTML = "";
@@ -428,6 +504,7 @@
   updateStrip();
   applyColors();
   showGlove("");
+  syncChrome();
 
   // Thank-you state after the Worker redirects back with ?sent=1
   if (new URLSearchParams(window.location.search).get("sent") === "1") {
