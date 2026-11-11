@@ -413,12 +413,37 @@
       var off = document.createElement("canvas"); off.width=648; off.height=720;
       var offCtx = off.getContext("2d");
       var colourCache = {};
+      var colourOrder = [];
+      var MAX_COLOUR_FRAMES = 12;
+      /* A built colour frame is fully opaque (grey photo base + tint layer).
+         If a phone webview drops a decoded image or canvas bitmap under
+         memory pressure, the composite comes out transparent instead —
+         detect that and treat the build as failed rather than showing it. */
+      var probeC = document.createElement("canvas"); probeC.width=16; probeC.height=18;
+      var probeCtx = probeC.getContext("2d", {willReadFrequently:true});
+      function canvasBlank(c){
+        try{
+          probeCtx.clearRect(0,0,16,18);
+          probeCtx.drawImage(c,0,0,16,18);
+          var d = probeCtx.getImageData(0,0,16,18).data, lit = 0;
+          for (var p=3;p<d.length;p+=16){ if (d[p] > 12) lit++; }
+          return lit < 8;
+        }catch(e){ return false; }
+      }
+      function cacheColour(i, c){
+        if (!colourCache[i]) colourOrder.push(i);
+        colourCache[i] = c;
+        while (colourOrder.length > MAX_COLOUR_FRAMES){
+          var old = colourOrder.shift();
+          if (old !== i) delete colourCache[old]; else colourOrder.push(old);
+        }
+      }
       function lifted(hex){
         var c=[1,3,5].map(function(j){ return parseInt(hex.substr(j,2),16)/255; })
           .map(function(v){ return Math.round(Math.pow(v,0.8)*255); });
         return "rgb("+c[0]+","+c[1]+","+c[2]+")";
       }
-      function buildColour(i){
+      function buildColour(i, retry){
         if (colourCache[i]) return Promise.resolve(colourCache[i]);
         return Promise.all([loadOne("grey",i), loadOne("tint",i), loadOne("mask",i)]).then(function(r){
           var g=r[0], t=r[1], m=r[2];
@@ -436,27 +461,66 @@
           var cx2 = c.getContext("2d");
           cx2.drawImage(g,0,0,648,720);
           cx2.drawImage(off,0,0);
-          colourCache[i]=c;
+          if (canvasBlank(c)){
+            /* A layer drew nothing (bitmap dropped under memory pressure).
+               Forget the cached layer images so they reload fresh, retry
+               once, and if it still fails return null — the caller keeps
+               the photo <img> on screen instead of a blank canvas. */
+            if (!retry){
+              ["grey","tint","mask"].forEach(function(s){ delete cache[s][i]; delete loadPromises[s+i]; });
+              return buildColour(i, true);
+            }
+            return null;
+          }
+          cacheColour(i, c);
           return c;
         });
       }
 
       /* ---------- display ---------- */
       function idx(){ return ((Math.round(angle/10)%N)+N)%N; }
+      var lastImgSrc = "";
+      function showImg(set, i){
+        if (cache[set][i]){
+          if (lastImgSrc !== cache[set][i].src){ lastImgSrc = cache[set][i].src; img.src = lastImgSrc; }
+        } else loadOne(set,i).then(function(im){
+          /* Apply only if the <img> is still meant to show this set:
+             grey in grey mode and as the colour-mode fallback, orig in
+             original mode. */
+          var want = mode==="orig" ? "orig" : "grey";
+          if (im && idx()===i && set===want){ lastImgSrc = im.src; img.src = im.src; }
+        });
+      }
+      var lastDrawnCheck = -1;
       function showFrame(){
         var i = idx();
         if (mode === "color"){
-          stage.classList.add("colour");
-          if (colourCache[i]){ ctx.drawImage(colourCache[i],0,0); }
-          else {
-            if (cache.grey[i]) ctx.drawImage(cache.grey[i],0,0,648,720);
-            buildColour(i).then(function(c){ if (c && idx()===i && mode==="color") ctx.drawImage(c,0,0); });
+          var cc = colourCache[i];
+          if (cc){
+            /* Swap to the canvas only with a built colour frame in hand. */
+            stage.classList.add("colour");
+            ctx.drawImage(cc,0,0);
+            if (lastDrawnCheck !== i){
+              lastDrawnCheck = i;
+              if (canvasBlank(canvas)){
+                /* The canvas bitmap was dropped after all — fall back to
+                   the photo for this frame and rebuild in the background. */
+                delete colourCache[i];
+                stage.classList.remove("colour");
+                showImg("grey", i);
+                buildColour(i).then(function(c){ if (c && idx()===i && mode==="color") showFrame(); });
+              }
+            }
+          } else {
+            /* Colour frame not built yet: keep the photo <img> on screen
+               (right angle, neutral grey) — never an empty canvas. */
+            stage.classList.remove("colour");
+            showImg("grey", i);
+            buildColour(i).then(function(c){ if (c && idx()===i && mode==="color") showFrame(); });
           }
         } else {
           stage.classList.remove("colour");
-          var set = mode==="orig" ? "orig" : "grey";
-          if (cache[set][i]) img.src = cache[set][i].src;
-          else loadOne(set,i).then(function(im){ if (im && idx()===i && mode!=="color") img.src = im.src; });
+          showImg(mode==="orig" ? "orig" : "grey", i);
         }
         var a = Math.round(((angle%360)+360)%360);
         var label = (a<100?"0":"")+(a<10?"0":"")+a+"°";
@@ -605,7 +669,7 @@
         });
       }
       function selectColour(i){
-        mode="color"; colorIdx=i; colourCache={};
+        mode="color"; colorIdx=i; colourCache={}; colourOrder=[];
         var c = COLOURS[i];
         selName.textContent = c.en;
         selHex.textContent = c.hex+" · Chart sample · Whole-glove preview";
@@ -616,7 +680,7 @@
           loadMsg.textContent = "Loading colour layers…";
           Promise.all([loadSet("tint"), loadSet("mask")]).then(function(){
             loadMsg.textContent = "Colour layers ready · Drag to spin your build";
-            colourCache={}; lastFrame=-1; showFrame();
+            colourCache={}; colourOrder=[]; lastFrame=-1; showFrame();
           });
         }
         showFrame();
@@ -739,9 +803,12 @@
       loadSet("grey","Loading preview frames…").then(function(){
         loadMsg.textContent = "36 frames loaded · Drag to rotate, or pick a colour";
         loadFill.style.width = "100%";
-        /* Preload the colour layers and original frames in the background,
-           so the first colour tap recolours the glove immediately. */
-        return Promise.all([loadSet("tint"), loadSet("mask"), loadSet("orig")]);
+        /* Preload only the colour layers in the background, so the first
+           colour tap recolours the glove immediately. The original-colour
+           frames load on demand (Original button) — preloading all four
+           sets at once is what pushed phone webviews over their image /
+           canvas memory budget and blanked the viewer. */
+        return Promise.all([loadSet("tint"), loadSet("mask")]);
       }).then(function(){
         if (mode !== "color") loadMsg.textContent = "Ready · 36 frames + colour layers loaded — pick a colour to see it on the glove";
         loadFill.style.width = "100%";
