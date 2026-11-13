@@ -11,17 +11,33 @@
   const source=new Image();source.src='img/catalog/infield-black-gold.jpg';
   const paths={
     silhouette:[[128,718],[155,570],[208,395],[300,240],[360,160],[434,78],[520,58],[628,72],[747,128],[848,221],[916,350],[967,474],[962,590],[912,710],[866,824],[783,902],[692,960],[555,985],[390,958],[272,900],[195,838],[145,780]],
-    web:[[505,116],[572,80],[690,100],[814,172],[892,272],[938,390],[926,514],[874,634],[811,712],[727,678],[653,600],[590,517],[530,415],[475,320],[456,230]]
+    web:[[470,170],[540,118],[675,140],[800,225],[855,335],[820,455],[755,545],[675,500],[600,420],[525,370],[455,330],[430,250]]
   };
   function pathMask(points){const c=document.createElement('canvas');c.width=1000;c.height=1000;const g=c.getContext('2d');g.fillStyle='#fff';g.beginPath();points.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();return g.getImageData(0,0,1000,1000).data}
   const shellMask=pathMask(paths.silhouette),webMask=pathMask(paths.web);
   function isGold(r,g,b){return r>95&&g>55&&r>g*1.20&&g>b*1.22&&(r-g)>22}
   function hexRgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
-  function recolor(src,hex,mask,mode){const out=new ImageData(new Uint8ClampedArray(src.data),src.width,src.height),target=hexRgb(hex);for(let y=0;y<src.height;y++)for(let x=0;x<src.width;x++){const i=(y*src.width+x)*4,a=src.data[i+3];if(!a)continue;const r=src.data[i],g=src.data[i+1],b=src.data[i+2],gold=isGold(r,g,b);if(r>238&&g>238&&b>238)continue;let selected=false;if(mode==='laces')selected=gold;else{const mx=Math.min(999,Math.floor(x/src.width*1000)),my=Math.min(999,Math.floor(y/src.height*1000)),mi=(my*1000+mx)*4;selected=!!mask[mi+3]&&!gold;if(mode==='shell'&&webMask[mi+3])selected=false}if(!selected)continue;const lum=(r*.2126+g*.7152+b*.0722)/255;const factor=mode==='laces'?.55+lum*.65:.42+lum*.86;for(let k=0;k<3;k++)out.data[i+k]=Math.min(255,target[k]*factor); }return out}
-  function fitImage(){if(!baseImage)return;const box=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,Math.round(box.width*dpr)),h=Math.max(1,Math.round(box.height*dpr));canvas.width=w;canvas.height=h;const ratio=Math.min(w/baseImage.width,h/baseImage.height),dw=baseImage.width*ratio,dh=baseImage.height*ratio,dx=(w-dw)/2,dy=(h-dh)/2;scaleInfo={dx,dy,dw,dh};ctx.clearRect(0,0,w,h);ctx.drawImage(baseImage,dx,dy,dw,dh);const image=ctx.getImageData(0,0,w,h),shell=recolor(image,colors.shell.find(c=>c[0]===state.shell)[1],shellMask,'shell'),web=recolor(image,colors.web.find(c=>c[0]===state.web)[1],webMask,'web'),laces=recolor(image,colors.laces.find(c=>c[0]===state.laces)[1],shellMask,'laces');
-    // Combine independent 2D masks, preserving the photographed leather grain and highlights.
-    const final=new ImageData(new Uint8ClampedArray(image.data),w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;if(!image.data[i+3])continue;const r=image.data[i],g=image.data[i+1],b=image.data[i+2];if(r>238&&g>238&&b>238)continue;const ox=Math.floor((x-dx)/dw*image.width),oy=Math.floor((y-dy)/dh*image.height);if(ox<0||oy<0||ox>=image.width||oy>=image.height)continue;const mx=Math.min(999,Math.floor(ox/image.width*1000)),my=Math.min(999,Math.floor(oy/image.height*1000)),mi=(my*1000+mx)*4,gold=isGold(r,g,b);if(gold){for(let k=0;k<3;k++)final.data[i+k]=laces.data[i+k]}else if(webMask[mi+3]){for(let k=0;k<3;k++)final.data[i+k]=web.data[i+k]}else if(shellMask[mi+3]){for(let k=0;k<3;k++)final.data[i+k]=shell.data[i+k]}}
-    ctx.putImageData(final,0,0);canvas.setAttribute('aria-label',`2D photo preview of baseball glove: ${state.shell} shell, ${state.web} web and ${state.laces} laces`)
+  function tintPixel(data,i,target,mode){const r=data[i],g=data[i+1],b=data[i+2],lum=(r*.2126+g*.7152+b*.0722)/255,factor=mode==='laces'?.55+lum*.65:.42+lum*.86;for(let k=0;k<3;k++)data[i+k]=Math.min(255,target[k]*factor)}
+  function fitImage(){
+    if(!baseImage)return;
+    const box=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,Math.round(box.width*dpr)),h=Math.max(1,Math.round(box.height*dpr));
+    canvas.width=w;canvas.height=h;
+    const ratio=Math.min(w/baseImage.width,h/baseImage.height),dw=baseImage.width*ratio,dh=baseImage.height*ratio,dx=(w-dw)/2,dy=(h-dh)/2;
+    ctx.clearRect(0,0,w,h);ctx.drawImage(baseImage,dx,dy,dw,dh);
+    const image=ctx.getImageData(0,0,w,h),final=new ImageData(new Uint8ClampedArray(image.data),w,h);
+    const shellColor=hexRgb(colors.shell.find(c=>c[0]===state.shell)[1]),webColor=hexRgb(colors.web.find(c=>c[0]===state.web)[1]),laceColor=hexRgb(colors.laces.find(c=>c[0]===state.laces)[1]);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const i=(y*w+x)*4,r=image.data[i],g=image.data[i+1],b=image.data[i+2];
+      if(!image.data[i+3]||(r>238&&g>238&&b>238))continue;
+      const ox=Math.floor((x-dx)/dw*baseImage.width),oy=Math.floor((y-dy)/dh*baseImage.height);
+      if(ox<0||oy<0||ox>=baseImage.width||oy>=baseImage.height)continue;
+      const mx=Math.min(999,Math.floor(ox/baseImage.width*1000)),my=Math.min(999,Math.floor(oy/baseImage.height*1000)),mi=(my*1000+mx)*4;
+      if(isGold(r,g,b))tintPixel(final.data,i,laceColor,'laces');
+      else if(webMask[mi+3])tintPixel(final.data,i,webColor,'web');
+      else if(shellMask[mi+3])tintPixel(final.data,i,shellColor,'shell');
+    }
+    ctx.putImageData(final,0,0);
+    canvas.setAttribute('aria-label',`2D photo preview of baseball glove: ${state.shell} shell, ${state.web} web and ${state.laces} laces`)
   }
   source.onload=()=>{baseImage=source;fitImage()};source.onerror=()=>{q('.photo-frame').textContent='Glove photo could not be loaded.'};
   window.addEventListener('resize',fitImage);
