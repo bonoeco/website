@@ -1,54 +1,49 @@
 (()=>{
-  const state={position:'Infield',size:'11.5″',leather:'Japan Kip',shell:'Black',web:'Black',laces:'Gold',webStyle:'I-web',branding:'',quantity:'',market:'',email:'',notes:''};
-  const colors={
-    shell:[['Black','#242826'],['Brown','#71472f'],['Tan','#bd9868'],['Red','#8d2928'],['Navy','#253c59']],
-    web:[['Black','#242826'],['Brown','#71472f'],['Tan','#bd9868'],['White','#edeae2'],['Red','#8d2928'],['Navy','#253c59']],
-    laces:[['Gold','#d4a82c'],['Natural','#d5b583'],['Black','#242826'],['White','#edeae2'],['Red','#b83a35']]
+  const palette=[['Black','#17161b'],['White','#f5fafe'],['Gray','#b7bac3'],['Burgundy','#8f1222'],['Red','#b82336'],['Orange','#e27f31'],['Yellow','#f8ce44'],['Brown','#65402d'],['Camel','#a07967'],['Rust','#924d3b'],['Cream','#f1deb4'],['Olive','#929165'],['Purple','#652f6b'],['Pink','#ed89b8'],['Navy','#08205c'],['Royal blue','#113080'],['Sky blue','#a3d1e9'],['Cyan','#49c9ee'],['Teal','#18627f'],['Mint','#abe6e2']];
+  const partDefinitions={
+    shell:{label:'Glove shell',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    palm:{label:'Palm leather',materials:['Japan Kip','Premium steerhide','Kip palm liner','Sheepskin liner'],color:'Black',material:'Japan Kip'},
+    web:{label:'Web',materials:['Japan Kip','Premium steerhide','Soft leather','Mesh'],color:'Black',material:'Japan Kip'},
+    laces:{label:'Laces',materials:['Cowhide lace','Kip lace','Synthetic lace'],color:'Gold',material:'Cowhide lace'},
+    binding:{label:'Binding',materials:['Cowhide leather','Kip leather'],color:'Black',material:'Cowhide leather'},
+    welting:{label:'Welting',materials:['Cowhide leather','Kip leather'],color:'Black',material:'Cowhide leather'},
+    lining:{label:'Finger lining / pad',materials:['Sheepskin','Kip liner','Moisture-wicking fabric'],color:'Black',material:'Sheepskin'},
+    stitching:{label:'Stitching',materials:['Polyester thread','Nylon thread'],color:'Gold',material:'Polyester thread'},
+    logo:{label:'Logo / stamp',materials:['Embroidery','Debossed leather','Printed mark'],color:'Gold',material:'Embroidery'},
+    leather1:{label:'Leather panel 1',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    leather2:{label:'Leather panel 2',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    leather3:{label:'Leather panel 3',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    leather4:{label:'Leather panel 4',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    leather5:{label:'Leather panel 5',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    leather6:{label:'Leather panel 6',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    leather7:{label:'Leather panel 7',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
+    leather8:{label:'Leather panel 8',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'}
   };
-  const names={shell:'Shell',web:'Web',laces:'Laces'};
-  let step=0,part='shell',baseImage=null,basePixels=null,scaleInfo=null;
-  const q=s=>document.querySelector(s),canvas=q('#glove-preview'),ctx=canvas.getContext('2d',{willReadFrequently:true});
-  const source=new Image();source.src='img/catalog/infield-black-gold.jpg';
-  const paths={
-    silhouette:[[128,718],[155,570],[208,395],[300,240],[360,160],[434,78],[520,58],[628,72],[747,128],[848,221],[916,350],[967,474],[962,590],[912,710],[866,824],[783,902],[692,960],[555,985],[390,958],[272,900],[195,838],[145,780]],
-    web:[[470,170],[540,118],[675,140],[800,225],[855,335],[820,455],[755,545],[675,500],[600,420],[525,370],[455,330],[430,250]]
-  };
-  function pathMask(points){const c=document.createElement('canvas');c.width=1000;c.height=1000;const g=c.getContext('2d');g.fillStyle='#fff';g.beginPath();points.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();return g.getImageData(0,0,1000,1000).data}
-  const shellMask=pathMask(paths.silhouette),webMask=pathMask(paths.web);
-  function isGold(r,g,b){return r>95&&g>55&&r>g*1.20&&g>b*1.22&&(r-g)>22}
-  function hexRgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
-  function tintPixel(data,i,target,mode){const r=data[i],g=data[i+1],b=data[i+2],lum=(r*.2126+g*.7152+b*.0722)/255,factor=mode==='laces'?.55+lum*.65:.42+lum*.86;for(let k=0;k<3;k++)data[i+k]=Math.min(255,target[k]*factor)}
-  function fitImage(){
-    if(!baseImage)return;
-    const box=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,Math.round(box.width*dpr)),h=Math.max(1,Math.round(box.height*dpr));
-    canvas.width=w;canvas.height=h;
-    const ratio=Math.min(w/baseImage.width,h/baseImage.height),dw=baseImage.width*ratio,dh=baseImage.height*ratio,dx=(w-dw)/2,dy=(h-dh)/2;
-    ctx.clearRect(0,0,w,h);ctx.drawImage(baseImage,dx,dy,dw,dh);
-    const image=ctx.getImageData(0,0,w,h),final=new ImageData(new Uint8ClampedArray(image.data),w,h);
-    const shellColor=hexRgb(colors.shell.find(c=>c[0]===state.shell)[1]),webColor=hexRgb(colors.web.find(c=>c[0]===state.web)[1]),laceColor=hexRgb(colors.laces.find(c=>c[0]===state.laces)[1]);
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-      const i=(y*w+x)*4,r=image.data[i],g=image.data[i+1],b=image.data[i+2];
-      if(!image.data[i+3]||(r>238&&g>238&&b>238))continue;
-      const ox=Math.floor((x-dx)/dw*baseImage.width),oy=Math.floor((y-dy)/dh*baseImage.height);
-      if(ox<0||oy<0||ox>=baseImage.width||oy>=baseImage.height)continue;
-      const mx=Math.min(999,Math.floor(ox/baseImage.width*1000)),my=Math.min(999,Math.floor(oy/baseImage.height*1000)),mi=(my*1000+mx)*4;
-      if(isGold(r,g,b))tintPixel(final.data,i,laceColor,'laces');
-      else if(webMask[mi+3])tintPixel(final.data,i,webColor,'web');
-      else if(shellMask[mi+3])tintPixel(final.data,i,shellColor,'shell');
-    }
-    ctx.putImageData(final,0,0);
-    canvas.setAttribute('aria-label',`2D photo preview of baseball glove: ${state.shell} shell, ${state.web} web and ${state.laces} laces`)
-  }
-  source.onload=()=>{baseImage=source;fitImage()};source.onerror=()=>{q('.photo-frame').textContent='Glove photo could not be loaded.'};
-  window.addEventListener('resize',fitImage);
-  function renderSwatches(){const holder=q('#swatches');holder.replaceChildren();for(const [name,color] of colors[part]){const b=document.createElement('button');b.type='button';b.className='swatch';b.style.backgroundColor=color;b.title=name;b.setAttribute('aria-label',`${name} ${names[part].toLowerCase()}`);b.setAttribute('aria-pressed',state[part]===name);b.addEventListener('click',()=>{state[part]=name;renderSwatches();q('#color-name').textContent=name;fitImage();summary()});holder.appendChild(b)}q('#active-part-name').textContent=names[part];q('#color-name').textContent=state[part]}
-  function summary(){const list=q('#summary-list');list.replaceChildren();[['position',state.position],['size',state.size],['leather',state.leather],['shell',state.shell],['web',state.web],['laces',state.laces],['webStyle',state.webStyle]].forEach(([k,v])=>{const e=document.createElement('span');e.className='chip';e.textContent=v;list.appendChild(e)});q('#preview-label').textContent=`Back view · ${state.position} · ${state.size}`;const review=q('#review-summary');if(review){review.replaceChildren();[['',`${state.position} · ${state.size} · ${state.leather}`],['',`Shell: ${state.shell} · Web: ${state.web} · Laces: ${state.laces}`],['',`${state.webStyle} · ${state.quantity||'Personal order'} · ${state.branding||'No personalization specified'}`]].forEach(([unused,line])=>{const p=document.createElement('p');p.textContent=line;review.appendChild(p)})}}
-  function show(n){step=Math.max(0,Math.min(3,n));document.querySelectorAll('[data-panel]').forEach(x=>x.hidden=+x.dataset.panel!==step);document.querySelectorAll('.custom-tabs button').forEach(x=>x.setAttribute('aria-selected',+x.dataset.step===step));summary()}
-  document.querySelectorAll('[data-key]').forEach(b=>b.addEventListener('click',()=>{state[b.dataset.key]=b.dataset.value;document.querySelectorAll(`[data-key="${b.dataset.key}"]`).forEach(x=>x.setAttribute('aria-pressed',x===b));summary()}));
-  document.querySelectorAll('[data-part]').forEach(b=>b.addEventListener('click',()=>{part=b.dataset.part;document.querySelectorAll('[data-part]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderSwatches()}));
-  q('#size').addEventListener('input',e=>{state.size=e.target.value;summary()});q('#leather').addEventListener('change',e=>{state.leather=e.target.value;summary()});q('#web-style').addEventListener('change',e=>{state.webStyle=e.target.value;summary()});
+  const state={sport:'Baseball',position:'Infield',fit:'Adult',size:'11.5″',throwingHand:'Right hand throw',series:'Japan Kip',webStyle:'I-web',parts:Object.fromEntries(Object.entries(partDefinitions).map(([key,p])=>[key,{color:p.color,material:p.material}])),branding:'',quantity:'',market:'',email:'',notes:''};
+  const keys=Object.keys(partDefinitions),canvas=document.querySelector('#glove-preview'),ctx=canvas.getContext('2d',{willReadFrequently:true});
+  let step=0,part='palm',baseImage=null,layers={};
+  const q=s=>document.querySelector(s),activeLabel=q('#active-part-name');
+  const layerSpecs=[['base','base.png','palm'],['binding','binding.png','binding'],['web','web.png','web'],['stitching','stitching.png','stitching'],['welting','welting.png','welting'],['laces','laces.png','laces']];
+  function rgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
+  function colorize(image,color){const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(image,0,0);const pixels=g.getImageData(0,0,c.width,c.height),target=rgb(color);for(let i=0;i<pixels.data.length;i+=4){if(!pixels.data[i+3])continue;const lum=(pixels.data[i]*.2126+pixels.data[i+1]*.7152+pixels.data[i+2]*.0722)/255,factor=.28+lum*.88;for(let k=0;k<3;k++)pixels.data[i+k]=Math.min(255,Math.round(target[k]*factor))}g.putImageData(pixels,0,0);return c}
+  function fitImage(){if(!baseImage||Object.keys(layers).length!==layerSpecs.length)return;const box=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,Math.round(box.width*dpr)),h=Math.max(1,Math.round(box.height*dpr));canvas.width=w;canvas.height=h;const ratio=Math.min(w/baseImage.width,h/baseImage.height),dw=baseImage.width*ratio,dh=baseImage.height*ratio,dx=(w-dw)/2,dy=(h-dh)/2;ctx.clearRect(0,0,w,h);for(const [name,,partKey] of layerSpecs){const color=palette.find(x=>x[0]===state.parts[partKey].color)?.[1]||'#17161b';ctx.drawImage(colorize(layers[name],color),dx,dy,dw,dh)}canvas.setAttribute('aria-label',`Palm view of baseball glove with ${state.parts.palm.color} palm, ${state.parts.web.color} web, ${state.parts.laces.color} laces, and selected binding, welting, and stitching colors`)}
+  const loadLayer=([name,file])=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>{layers[name]=image;resolve()};image.onerror=()=>reject(new Error(`Could not load ${file}`));image.src=`img/custom/palm/${file}`});
+  Promise.all(layerSpecs.map(loadLayer)).then(()=>{baseImage=layers.base;fitImage()}).catch(error=>{q('.photo-frame').textContent=error.message});window.addEventListener('resize',fitImage);
+  function renderMaterials(){const sel=q('#part-material'),options=partDefinitions[part].materials;sel.replaceChildren(...options.map(name=>{const o=document.createElement('option');o.textContent=name;o.value=name;return o}));sel.value=state.parts[part].material}
+  function renderSwatches(){const holder=q('#swatches');holder.replaceChildren();for(const [name,color] of palette){const b=document.createElement('button');b.type='button';b.className='swatch';b.style.backgroundColor=color;b.title=name;b.setAttribute('aria-label',`${name} ${partDefinitions[part].label.toLowerCase()}`);b.setAttribute('aria-pressed',state.parts[part].color===name);b.addEventListener('click',()=>{state.parts[part].color=name;renderSwatches();q('#color-name').textContent=name;fitImage();summary()});holder.appendChild(b)}activeLabel.textContent=partDefinitions[part].label;q('#color-name').textContent=state.parts[part].color;renderMaterials()}
+  function summary(){const list=q('#summary-list');list.replaceChildren();const rows=[state.sport,state.position,state.fit,state.size,state.throwingHand,state.series,state.webStyle,...keys.map(k=>`${partDefinitions[k].label}: ${state.parts[k].color} / ${state.parts[k].material}`)];for(const value of rows){const e=document.createElement('span');e.className='chip';e.textContent=value;list.appendChild(e)}q('#preview-label').textContent=`Palm view · ${state.position} · ${state.size}`;const review=q('#review-summary');if(review){review.replaceChildren();const lines=[`Sport: ${state.sport} · Position: ${state.position} · Fit: ${state.fit}`,`Size: ${state.size} · ${state.throwingHand}`,`Series / base leather: ${state.series}`,`Web style: ${state.webStyle}`,...keys.map(k=>`${partDefinitions[k].label}: ${state.parts[k].color} · ${state.parts[k].material}`),`Quantity: ${state.quantity||'Personal order'}`,`Personalization: ${state.branding||'None specified'}`];for(const line of lines){const p=document.createElement('p');p.textContent=line;review.appendChild(p)}}}
+  function currentRecord(){return {createdAt:new Date().toISOString(),sport:state.sport,position:state.position,fit:state.fit,size:state.size,throwingHand:state.throwingHand,series:state.series,webStyle:state.webStyle,parts:state.parts,quantity:state.quantity||'Personal order',personalization:state.branding||'',market:state.market,email:state.email,notes:state.notes}}
+  function allLines(record=currentRecord()){const data=record.parts&&typeof record.parts==='string'?JSON.parse(record.parts):record.parts||state.parts;return [['Sport',record.sport],['Position',record.position],['Fit',record.fit],['Preferred size',record.size],['Throwing hand',record.throwingHand],['Series / base leather',record.series],['Web style',record.webStyle],...keys.flatMap(k=>[[`${partDefinitions[k].label} color`,data[k]?.color||''],[`${partDefinitions[k].label} material`,data[k]?.material||'']]),['Quantity',record.quantity],['Personalization',record.personalization||''],['Delivery market',record.market||''],['Customer email',record.email||''],['Notes',record.notes||''],['Submitted at',record.createdAt]]}
+  q('#part-material').addEventListener('change',e=>{state.parts[part].material=e.target.value;summary()});
+  q('#throwing-hand').addEventListener('change',e=>{state.throwingHand=e.target.value;summary()});q('#sport').addEventListener('change',e=>{state.sport=e.target.value;summary()});q('#fit').addEventListener('change',e=>{state.fit=e.target.value;summary()});
+  q('#size').addEventListener('input',e=>{state.size=e.target.value;summary()});q('#leather').addEventListener('change',e=>{state.series=e.target.value;summary()});q('#web-style').addEventListener('change',e=>{state.webStyle=e.target.value;summary()});
   ['branding','quantity','market','email','notes'].forEach(id=>q('#'+id)?.addEventListener('input',e=>{state[id]=e.target.value;summary()}));
+  document.querySelectorAll('[data-key]').forEach(b=>b.addEventListener('click',()=>{state.position=b.dataset.value;document.querySelectorAll('[data-key]').forEach(x=>x.setAttribute('aria-pressed',x===b));summary()}));
+  document.querySelectorAll('[data-part]').forEach(b=>b.addEventListener('click',()=>{part=b.dataset.part;document.querySelectorAll('[data-part]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderSwatches()}));
   document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>show(step+1)));document.querySelectorAll('[data-prev]').forEach(b=>b.addEventListener('click',()=>show(step-1)));document.querySelectorAll('.custom-tabs button').forEach(b=>b.addEventListener('click',()=>show(+b.dataset.step)));
-  q('#custom-form').addEventListener('submit',e=>{e.preventDefault();if(!q('#custom-form').reportValidity())return;const body=encodeURIComponent(['Position: '+state.position,'Size: '+state.size,'Leather: '+state.leather,'Shell: '+state.shell,'Web: '+state.web,'Laces: '+state.laces,'Web style: '+state.webStyle,'Branding: '+(state.branding||'None'),'Quantity: '+(state.quantity||'Personal order'),'Market: '+state.market,'Email: '+state.email,'Notes: '+(state.notes||'')].join('\n'));q('#custom-status').textContent='Opening your email app with the brief addressed to BONOECO.';location.href='mailto:info@bonoeco.com?subject='+encodeURIComponent('BONOECO custom glove brief')+'&body='+body});
+  function show(n){step=Math.max(0,Math.min(3,n));document.querySelectorAll('[data-panel]').forEach(x=>x.hidden=+x.dataset.panel!==step);document.querySelectorAll('.custom-tabs button').forEach(x=>x.setAttribute('aria-selected',+x.dataset.step===step));summary()}
+  q('#custom-form').addEventListener('submit',async e=>{e.preventDefault();if(!q('#custom-form').reportValidity())return;if(q('#company-website').value)return;const status=q('#custom-status'),payload={...currentRecord(),personalization:state.branding,consent:true,honeypot:q('#company-website').value};status.textContent='Submitting your specification…';try{const res=await fetch('/api/custom-orders',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)}),body=await res.json();if(!res.ok)throw new Error(body.error||'The order service is unavailable.');status.textContent=`Specification ${body.orderId} submitted. BONOECO will follow up by email.`;q('#custom-form').querySelector('[type=submit]').disabled=true}catch(err){status.textContent=`Could not submit yet: ${err.message} You can still export the PDF or Excel file.`}});
+  q('#download-xlsx').addEventListener('click',()=>window.GloveExport.downloadXlsx('bonoeco-glove-specification.xlsx',[['Field','Specification'],...allLines() ]));
+  q('#download-pdf').addEventListener('click',()=>window.GloveExport.printTable('BONOECO Glove Specification',allLines().map(([field,value])=>[field,value??''])));
   renderSwatches();show(0);
 })();
