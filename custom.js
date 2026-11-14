@@ -1,23 +1,23 @@
 (()=>{
   const palette=[['Black','#17161b'],['White','#f5fafe'],['Gray','#b7bac3'],['Burgundy','#8f1222'],['Red','#b82336'],['Orange','#e27f31'],['Yellow','#f8ce44'],['Brown','#65402d'],['Camel','#a07967'],['Rust','#924d3b'],['Cream','#f1deb4'],['Olive','#929165'],['Purple','#652f6b'],['Pink','#ed89b8'],['Navy','#08205c'],['Royal blue','#113080'],['Sky blue','#a3d1e9'],['Cyan','#49c9ee'],['Teal','#18627f'],['Mint','#abe6e2']];
   const partDefinitions={
-    shell:{label:'Glove shell',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    palm:{label:'Palm leather',materials:['Japan Kip','Premium steerhide','Kip palm liner','Sheepskin liner'],color:'Black',material:'Japan Kip'},
-    web:{label:'Web',materials:['Japan Kip','Premium steerhide','Soft leather','Mesh'],color:'Black',material:'Japan Kip'},
+    shell:{label:'Glove shell',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    palm:{label:'Palm leather',materials:['Japan Kip','Premium steerhide','Kip palm liner','Sheepskin liner'],color:'Gray',material:'Japan Kip'},
+    web:{label:'Web',materials:['Japan Kip','Premium steerhide','Soft leather','Mesh'],color:'Gray',material:'Japan Kip'},
     laces:{label:'Laces',materials:['Cowhide lace','Kip lace','Synthetic lace'],color:'Gold',material:'Cowhide lace'},
-    binding:{label:'Binding',materials:['Cowhide leather','Kip leather'],color:'Black',material:'Cowhide leather'},
-    welting:{label:'Welting',materials:['Cowhide leather','Kip leather'],color:'Black',material:'Cowhide leather'},
-    lining:{label:'Finger lining / pad',materials:['Sheepskin','Kip liner','Moisture-wicking fabric'],color:'Black',material:'Sheepskin'},
+    binding:{label:'Binding',materials:['Cowhide leather','Kip leather'],color:'Gray',material:'Cowhide leather'},
+    welting:{label:'Welting',materials:['Cowhide leather','Kip leather'],color:'Gray',material:'Cowhide leather'},
+    lining:{label:'Finger lining / pad',materials:['Sheepskin','Kip liner','Moisture-wicking fabric'],color:'Gray',material:'Sheepskin'},
     stitching:{label:'Stitching',materials:['Polyester thread','Nylon thread'],color:'Gold',material:'Polyester thread'},
     logo:{label:'Logo / stamp',materials:['Embroidery','Debossed leather','Printed mark'],color:'Gold',material:'Embroidery'},
-    leather1:{label:'Leather panel 1',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    leather2:{label:'Leather panel 2',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    leather3:{label:'Leather panel 3',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    leather4:{label:'Leather panel 4',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    leather5:{label:'Leather panel 5',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    leather6:{label:'Leather panel 6',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    leather7:{label:'Leather panel 7',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'},
-    leather8:{label:'Leather panel 8',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Black',material:'Japan Kip'}
+    leather1:{label:'Leather panel 1',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    leather2:{label:'Leather panel 2',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    leather3:{label:'Leather panel 3',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    leather4:{label:'Leather panel 4',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    leather5:{label:'Leather panel 5',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    leather6:{label:'Leather panel 6',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    leather7:{label:'Leather panel 7',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
+    leather8:{label:'Leather panel 8',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'}
   };
   const state={sport:'Baseball',position:'Infield',fit:'Adult',size:'11.5″',throwingHand:'Right hand throw',series:'Japan Kip',webStyle:'I-web',parts:Object.fromEntries(Object.entries(partDefinitions).map(([key,p])=>[key,{color:p.color,material:p.material}])),branding:'',quantity:'',market:'',email:'',notes:''};
   const keys=Object.keys(partDefinitions),canvas=document.querySelector('#glove-preview'),ctx=canvas.getContext('2d',{willReadFrequently:true});
@@ -25,7 +25,7 @@
   const q=s=>document.querySelector(s),activeLabel=q('#active-part-name');
   const layerSpecs=[['base','base.png','palm'],['binding','binding.png','binding'],['web','web.png','web'],['stitching','stitching.png','stitching'],['welting','welting.png','welting'],['laces','laces.png','laces']];
   function rgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
-  function colorize(image,color){const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(image,0,0);const pixels=g.getImageData(0,0,c.width,c.height),target=rgb(color);for(let i=0;i<pixels.data.length;i+=4){if(!pixels.data[i+3])continue;const lum=(pixels.data[i]*.2126+pixels.data[i+1]*.7152+pixels.data[i+2]*.0722)/255,factor=.28+lum*.88;for(let k=0;k<3;k++)pixels.data[i+k]=Math.min(255,Math.round(target[k]*factor))}g.putImageData(pixels,0,0);return c}
+  function colorize(image,color){const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(image,0,0);const pixels=g.getImageData(0,0,c.width,c.height),target=rgb(color);for(let i=0;i<pixels.data.length;i+=4){if(!pixels.data[i+3])continue;const lum=(pixels.data[i]*.2126+pixels.data[i+1]*.7152+pixels.data[i+2]*.0722)/255;/* Keep leather grain while preventing the original black from overpowering the chosen swatch. */const factor=.72+lum*.45;for(let k=0;k<3;k++)pixels.data[i+k]=Math.min(255,Math.round(target[k]*factor))}g.putImageData(pixels,0,0);return c}
   function fitImage(){if(!baseImage||Object.keys(layers).length!==layerSpecs.length)return;const box=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,Math.round(box.width*dpr)),h=Math.max(1,Math.round(box.height*dpr));canvas.width=w;canvas.height=h;const ratio=Math.min(w/baseImage.width,h/baseImage.height),dw=baseImage.width*ratio,dh=baseImage.height*ratio,dx=(w-dw)/2,dy=(h-dh)/2;ctx.clearRect(0,0,w,h);for(const [name,,partKey] of layerSpecs){const color=palette.find(x=>x[0]===state.parts[partKey].color)?.[1]||'#17161b';ctx.drawImage(colorize(layers[name],color),dx,dy,dw,dh)}canvas.setAttribute('aria-label',`Palm view of baseball glove with ${state.parts.palm.color} palm, ${state.parts.web.color} web, ${state.parts.laces.color} laces, and selected binding, welting, and stitching colors`)}
   const loadLayer=([name,file])=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>{layers[name]=image;resolve()};image.onerror=()=>reject(new Error(`Could not load ${file}`));image.src=`img/custom/palm/${file}`});
   Promise.all(layerSpecs.map(loadLayer)).then(()=>{baseImage=layers.base;fitImage()}).catch(error=>{q('.photo-frame').textContent=error.message});window.addEventListener('resize',fitImage);
