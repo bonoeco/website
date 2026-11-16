@@ -1,25 +1,25 @@
 (()=>{
   const palette=[['Black','#17161b'],['White','#f5fafe'],['Gray','#b7bac3'],['Burgundy','#8f1222'],['Red','#b82336'],['Orange','#e27f31'],['Yellow','#f8ce44'],['Brown','#65402d'],['Camel','#a07967'],['Rust','#924d3b'],['Cream','#f1deb4'],['Olive','#929165'],['Purple','#652f6b'],['Pink','#ed89b8'],['Navy','#08205c'],['Royal blue','#113080'],['Sky blue','#a3d1e9'],['Cyan','#49c9ee'],['Teal','#18627f'],['Mint','#abe6e2']];
   const partDefinitions={
-    shell:{label:'Glove shell',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    palm:{label:'Palm leather',materials:['Japan Kip','Premium steerhide','Kip palm liner','Sheepskin liner'],color:'Gray',material:'Japan Kip'},
-    web:{label:'Web',materials:['Japan Kip','Premium steerhide','Soft leather','Mesh'],color:'Gray',material:'Japan Kip'},
+    shell:{label:'Glove shell',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    palm:{label:'Palm leather',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    web:{label:'Web',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
     laces:{label:'Laces',materials:['Cowhide lace','Kip lace','Synthetic lace'],color:'Gold',material:'Cowhide lace'},
     binding:{label:'Binding',materials:['Cowhide leather','Kip leather'],color:'Gray',material:'Cowhide leather'},
     welting:{label:'Welting',materials:['Cowhide leather','Kip leather'],color:'Gray',material:'Cowhide leather'},
     lining:{label:'Finger lining / pad',materials:['Sheepskin','Kip liner','Moisture-wicking fabric'],color:'Gray',material:'Sheepskin'},
     stitching:{label:'Stitching',materials:['Polyester thread','Nylon thread'],color:'Gold',material:'Polyester thread'},
     logo:{label:'Logo / stamp',materials:['Embroidery','Debossed leather','Printed mark'],color:'Gold',material:'Embroidery'},
-    leather1:{label:'Leather panel 1',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    leather2:{label:'Leather panel 2',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    leather3:{label:'Leather panel 3',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    leather4:{label:'Leather panel 4',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    leather5:{label:'Leather panel 5',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    leather6:{label:'Leather panel 6',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    leather7:{label:'Leather panel 7',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'},
-    leather8:{label:'Leather panel 8',materials:['Japan Kip','Premium steerhide','Soft leather','Suede'],color:'Gray',material:'Japan Kip'}
+    leather1:{label:'Leather panel 1',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather2:{label:'Leather panel 2',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather3:{label:'Leather panel 3',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather4:{label:'Leather panel 4',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather5:{label:'Leather panel 5',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather6:{label:'Leather panel 6',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather7:{label:'Leather panel 7',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather8:{label:'Leather panel 8',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'}
   };
-  const state={sport:'Baseball',position:'Infield',fit:'Adult',size:'11.5″',throwingHand:'Right hand throw',series:'Japan Kip',webStyle:'I-web',parts:Object.fromEntries(Object.entries(partDefinitions).map(([key,p])=>[key,{color:p.color,material:p.material}])),branding:'',quantity:'',market:'',email:'',notes:''};
+  const state={sport:'Baseball',position:'Infield',fit:'Adult',size:'11.5″',throwingHand:'Right hand throw',series:'KIP',webStyle:'I-web',parts:Object.fromEntries(Object.entries(partDefinitions).map(([key,p])=>[key,{color:p.color,material:p.material}])),branding:'',quantity:'',market:'',email:'',notes:''};
   const keys=Object.keys(partDefinitions),canvas=document.querySelector('#glove-preview'),ctx=canvas.getContext('2d',{willReadFrequently:true});
   let step=0,part='shell',currentView='palm',baseImage=null,layers={};
   const q=s=>document.querySelector(s),activeLabel=q('#active-part-name');
