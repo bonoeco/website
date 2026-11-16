@@ -10,14 +10,14 @@
     lining:{label:'Finger lining / pad',materials:['Sheepskin','Kip liner','Moisture-wicking fabric'],color:'Gray',material:'Sheepskin'},
     stitching:{label:'Stitching',materials:['Polyester thread','Nylon thread'],color:'Gold',material:'Polyester thread'},
     logo:{label:'Logo / stamp',materials:['Embroidery','Debossed leather','Printed mark'],color:'Gold',material:'Embroidery'},
-    leather1:{label:'Leather panel 1',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
-    leather2:{label:'Leather panel 2',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
-    leather3:{label:'Leather panel 3',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
-    leather4:{label:'Leather panel 4',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
-    leather5:{label:'Leather panel 5',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
-    leather6:{label:'Leather panel 6',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
-    leather7:{label:'Leather panel 7',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
-    leather8:{label:'Leather panel 8',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'}
+    leather1:{label:'Pinky finger panel 1',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather2:{label:'Pinky finger panel 2',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather3:{label:'Ring finger panel 1',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather4:{label:'Ring finger panel 2',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather5:{label:'Ring–middle shared panel',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather6:{label:'Middle finger panel 2',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather7:{label:'Middle finger panel 3',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'},
+    leather8:{label:'Index finger panels',materials:['KIP','STEER','SOFT MILLED'],color:'Gray',material:'KIP'}
   };
   const state={sport:'Baseball',position:'Infield',fit:'Adult',size:'11.5″',throwingHand:'Right hand throw',series:'KIP',webStyle:'I-web',parts:Object.fromEntries(Object.entries(partDefinitions).map(([key,p])=>[key,{color:p.color,material:p.material}])),branding:'',quantity:'',market:'',email:'',notes:''};
   const keys=Object.keys(partDefinitions),canvas=document.querySelector('#glove-preview'),ctx=canvas.getContext('2d',{willReadFrequently:true});
@@ -28,8 +28,8 @@
     side:[['base','base.webp',null],['shell','shell-panel.webp','shell'],['pinky1','pinky-panel-1.webp','leather1'],['pinky2','pinky-panel-2.webp','leather2'],['ring1','ring-panel-1.webp','leather3'],['ring2','ring-panel-2.webp','leather4'],['ringMiddle','ring-middle-panel.webp','leather5'],['middle2','middle-panel-2.webp','leather6'],['middle3','middle-panel-3.webp','leather7'],['index1','index-panel-1.webp','leather8'],['index2','index-panel-2.webp','leather8'],['index3','index-panel-3.webp','leather8'],['web','web.webp','web'],['wrist','wrist.webp','shell'],['fingerPad','finger-pad.webp','shell'],['pinkyLoop','pinky-loop.webp','laces'],['lining','lining.webp','lining'],['welting','welting.webp','welting'],['binding','binding.webp','binding'],['lace','lace.webp','laces'],['stitching','stitching.webp','stitching'],['logo','logo-embroidery.webp','logo']]
   };
   const viewParts={
-    palm:[['shell','Shell'],['palm','Palm'],['web','Web'],['laces','Laces'],['binding','Binding'],['welting','Welting'],['lining','Lining'],['stitching','Stitching'],['logo','Logo'],...keys.filter(k=>/^leather[1-8]$/.test(k)).map((k,i)=>[k,`Leather ${i+1}`])],
-    side:[['shell','Side shell'],['leather1','Pinky panel 1'],['leather2','Pinky panel 2'],['leather3','Ring panel 1'],['leather4','Ring panel 2'],['leather5','Ring–middle panel'],['leather6','Middle panel 2'],['leather7','Middle panel 3'],['leather8','Index panels'],['web','Web'],['laces','Laces & loop'],['binding','Binding'],['welting','Welting'],['lining','Wrist lining'],['stitching','Stitching'],['logo','Embroidery']]
+    palm:[['shell','Shell'],['palm','Palm'],['web','Web'],['laces','Laces'],['binding','Binding'],['welting','Welting'],['lining','Lining'],['stitching','Stitching'],['logo','Logo']],
+    side:[['shell','Side shell'],['leather1','Pinky finger panel 1'],['leather2','Pinky finger panel 2'],['leather3','Ring finger panel 1'],['leather4','Ring finger panel 2'],['leather5','Ring–middle shared panel'],['leather6','Middle finger panel 2'],['leather7','Middle finger panel 3'],['leather8','Index finger panels'],['web','Web'],['laces','Laces & loop'],['binding','Binding'],['welting','Welting'],['lining','Wrist lining'],['stitching','Stitching'],['logo','Embroidery']]
   };
   function rgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
   function colorize(image,color){const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(image,0,0);const pixels=g.getImageData(0,0,c.width,c.height),target=rgb(color);for(let i=0;i<pixels.data.length;i+=4){if(!pixels.data[i+3])continue;const lum=(pixels.data[i]*.2126+pixels.data[i+1]*.7152+pixels.data[i+2]*.0722)/255;/* Keep leather grain while preventing the original black from overpowering the chosen swatch. */const factor=.72+lum*.45;for(let k=0;k<3;k++)pixels.data[i+k]=Math.min(255,Math.round(target[k]*factor))}g.putImageData(pixels,0,0);return c}
