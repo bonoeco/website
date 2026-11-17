@@ -29,7 +29,7 @@
     ".bnc-in{flex:1;border:1px solid #ccc;border-radius:10px;padding:9px 11px;font:inherit;font-size:15px;outline:none}",
     ".bnc-in:focus{border-color:" + BRASS + "}",
     ".bnc-send{background:" + GREEN + ";color:#fff;border:0;border-radius:10px;padding:0 16px;font:600 15px inherit;cursor:pointer}",
-    ".bnc-send:disabled{opacity:.55;cursor:default}",
+    ".bnc-send:disabled{opacity:.55;cursor:default}",\n    ".bnc-consent{display:flex;gap:8px;align-items:flex-start;padding:8px 12px 2px;background:#fff;color:#555;font-size:12px;line-height:1.35}",\n    ".bnc-consent input{margin-top:2px;flex:none}",\n    ".bnc-status{min-height:16px;padding:0 12px 6px;background:#fff;color:#5f665f;font-size:11px}",
     "@media (max-width:480px){#bnc-panel{right:12px;bottom:78px}}"
   ].join("\n");
 
@@ -52,6 +52,7 @@
     '<button class="bnc-x" aria-label="Close chat">&times;</button></div>' +
     '<div class="bnc-msgs"></div>' +
     '<div class="bnc-chips"></div>' +
+    '<label class="bnc-consent"><input class="bnc-email-consent" type="checkbox">Email this conversation to info.bonoeco@gmail.com when you close the chat. It will be sent by email and not stored on the website.</label><div class="bnc-status" aria-live="polite"></div>' +
     '<form class="bnc-row"><input class="bnc-in" type="text" maxlength="1000" autocomplete="off" placeholder="Ask about gloves, custom orders, OEM\u2026" aria-label="Type your question">' +
     '<button class="bnc-send" type="submit">Send</button></form>';
 
@@ -62,10 +63,10 @@
   var chips = panel.querySelector(".bnc-chips");
   var form = panel.querySelector(".bnc-row");
   var input = panel.querySelector(".bnc-in");
-  var send = panel.querySelector(".bnc-send");
+  var send = panel.querySelector(".bnc-send");\n  var consent = panel.querySelector(".bnc-email-consent");\n  var transcriptStatus = panel.querySelector(".bnc-status");\n  var closeButton = panel.querySelector(".bnc-x");
   var history = [];
   var greeted = false;
-  var busy = false;
+  var busy = false;\n  var transcriptSent = false;\n  var transcriptBusy = false;\n  var transcriptId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2);
 
   var SUGGESTIONS = [
     "What leathers do you offer?",
@@ -99,7 +100,34 @@
     }
     input.focus();
   }
-  function close() { panel.classList.remove("open"); }
+  function close() {
+    if (!consent.checked || transcriptSent || !history.some(function (m) { return m.role === "user"; })) {
+      panel.classList.remove("open");
+      return;
+    }
+    if (busy || transcriptBusy) {
+      transcriptStatus.textContent = "Wait for the current reply or email to finish before closing.";
+      return;
+    }
+    transcriptBusy = true;
+    closeButton.disabled = true;
+    transcriptStatus.textContent = "Sending the conversation to BONOECO...";
+    fetch("/api/chat-transcript", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: transcriptId, consent: true, messages: history.slice(-40) })
+    }).then(function (response) {
+      if (!response.ok) throw new Error("send failed");
+      transcriptSent = true;
+      transcriptStatus.textContent = "Conversation sent to BONOECO.";
+      setTimeout(function () { panel.classList.remove("open"); }, 700);
+    }).catch(function () {
+      transcriptStatus.textContent = "Could not send. Check your connection and click close to retry.";
+    }).then(function () {
+      transcriptBusy = false;
+      closeButton.disabled = false;
+    });
+  }
 
   btn.addEventListener("click", function () {
     panel.classList.contains("open") ? close() : open();
