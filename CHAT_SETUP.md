@@ -1,18 +1,28 @@
 # BONOECO AI chat setup
 
-The public site chat widget uses the same-origin Pages Function at `/api/chat`.
+The public site chat widget calls the same-origin Pages Functions at `/api/chat` and `/api/chat-transcript`.
 
-Before deploying this branch, open the Cloudflare Pages project connected to this repository and add a Workers AI binding:
+## Cloudflare Pages bindings
 
-- Variable name: `AI`
-- Binding type: Workers AI
+In the Cloudflare Pages project connected to this repository, configure:
 
-The function uses the model `@cf/meta/llama-3.3-70b-instruct-fp8-fast`. The binding must be enabled for the Pages production environment (and preview if you want to test preview deployments).
+- Workers AI binding named `AI` for assistant replies.
+- Service binding named `BONOECO_FORMS`, pointing to the existing `bonoeco-forms` Worker, for emailing consented transcripts.
 
-The endpoint only accepts POST requests from bonoeco.com, limits payload size and message history, and applies a best-effort per-isolate IP rate limit. For stronger abuse protection, also add a Cloudflare rate-limiting rule for `/api/chat`. No chat messages are written to D1 or logged by this code.
+Deploy the updated `worker/worker.js` source to the existing `bonoeco-forms` Worker. Its existing Email Service binding must be named `EMAIL`; restrict it to send from `forms@bonoeco.com` and to `info.bonoeco@gmail.com`. The Worker also needs its existing Workers AI binding named `AI` for `/api/chat` if that route is still used.
 
-Smoke test after adding the binding and deploying:
+The Pages Function uses model `@cf/meta/llama-3.3-70b-instruct-fp8-fast`. Bindings must be enabled for production (and preview if preview deployments should be tested). Redeploy after changing bindings.
+
+## Transcript behavior
+
+A visitor must check the transcript email box. The latest 40 messages are emailed to `info.bonoeco@gmail.com` when they close the chat. If they leave the box unchecked, no transcript is emailed. Transcripts are not stored in D1 by this code. The email Worker enforces a small request-size limit, validates consent and origin, uses a fixed recipient, and applies a best-effort per-isolate send limit.
+
+For stronger abuse protection, add a Cloudflare rate-limiting rule for `/api/chat` and `/api/chat-transcript`.
+
+## Smoke test
+
 1. Open the site and confirm the floating Chat button appears.
-2. Ask “What leather options are available?” and confirm a response.
-3. Ask for a price and confirm the assistant directs the visitor to request a quote instead of inventing one.
-4. Confirm the endpoint returns a graceful unavailable message if the AI binding is disabled.
+2. Ask about leather choices and verify a response.
+3. Check the transcript option, exchange a short conversation, close the chat, and confirm the transcript arrives at `info.bonoeco@gmail.com`.
+4. Repeat without checking the option and verify no transcript is sent.
+5. Ask for a price and verify the assistant directs the visitor to request a quote instead of inventing one.
