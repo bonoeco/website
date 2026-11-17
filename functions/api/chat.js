@@ -44,8 +44,30 @@ export async function onRequestPost({ request, env }) {
   const length = Number(request.headers.get("Content-Length") || 0);
   if (length > 16000) return json({ error: "too_large" }, 413);
 
+  let raw = "";
+  try {
+    const reader = request.body?.getReader();
+    if (!reader) return json({ error: "bad_request" }, 400);
+    const chunks = [];
+    let size = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > 16000) {
+        await reader.cancel();
+        return json({ error: "too_large" }, 413);
+      }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+    raw = new TextDecoder().decode(bytes);
+  } catch { return json({ error: "bad_request" }, 400); }
+
   let payload;
-  try { payload = await request.json(); } catch { return json({ error: "bad_request" }, 400); }
+  try { payload = JSON.parse(raw); } catch { return json({ error: "bad_request" }, 400); }
   if (!Array.isArray(payload.messages)) return json({ error: "bad_request" }, 400);
 
   const messages = payload.messages
