@@ -1,4 +1,5 @@
-const transcriptRates = new Map();\nconst sentTranscripts = new Map();
+const transcriptRates = new Map();
+const sentTranscripts = new Map();
 
 export async function onRequestPost({ request, env }) {
   const origin = request.headers.get("Origin") || "";
@@ -30,7 +31,9 @@ export async function onRequestPost({ request, env }) {
     return new Response("Consent and transcript are required.", { status: 422 });
   }
 
-  if (sentTranscripts.has(payload.id)) return new Response(JSON.stringify({ sent: true }), { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });\n\n  const messages = payload.messages
+  if (sentTranscripts.has(payload.id)) return new Response(JSON.stringify({ sent: true }), { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
+
+  const messages = payload.messages
     .filter(m => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
     .slice(-40)
     .map(m => ({ role: m.role, content: m.content.trim().slice(0, 800) }))
