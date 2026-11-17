@@ -31,7 +31,9 @@ export async function onRequestPost({ request, env }) {
     return new Response("Consent and transcript are required.", { status: 422 });
   }
 
-  const sentAt = sentTranscripts.get(payload.id);\n  if (sentAt && now - sentAt < 86400000) return new Response(JSON.stringify({ sent: true }), { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });\n  if (sentAt) sentTranscripts.delete(payload.id);
+  const sentAt = sentTranscripts.get(payload.id);
+  if (sentAt && now - sentAt < 86400000) return new Response(JSON.stringify({ sent: true }), { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
+  if (sentAt) sentTranscripts.delete(payload.id);
 
   const messages = payload.messages
     .filter(m => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
