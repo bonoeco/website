@@ -66,14 +66,25 @@ export async function onRequestPost({ request, env }) {
     redirect: "manual"
   });
 
+  sentTranscripts.set(payload.id, now);
   try {
     const result = await env.BONOECO_FORMS.fetch(forwarded);
-    if (result.status !== 303) return new Response("Email delivery failed.", { status: 502 });
+    if (result.status !== 303) {
+      sentTranscripts.delete(payload.id);
+      return new Response("Email delivery failed.", { status: 502 });
+    }
+    if (sentTranscripts.size > 1000) {
+      for (const [id, timestamp] of sentTranscripts) {
+        if (now - timestamp > 86400000) sentTranscripts.delete(id);
+      }
+      while (sentTranscripts.size > 1000) sentTranscripts.delete(sentTranscripts.keys().next().value);
+    }
     return new Response(JSON.stringify({ sent: true }), {
       status: 200,
       headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
     });
   } catch {
+    sentTranscripts.delete(payload.id);
     return new Response("Email delivery failed.", { status: 502 });
   }
 }
