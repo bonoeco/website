@@ -23,8 +23,30 @@ export async function onRequestPost({ request, env }) {
     return new Response("Transcript too large.", { status: 413 });
   }
 
+  let raw = "";
+  try {
+    const reader = request.body?.getReader();
+    if (!reader) return new Response("Bad request.", { status: 400 });
+    const chunks = [];
+    let size = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > 50000) {
+        await reader.cancel();
+        return new Response("Transcript too large.", { status: 413 });
+      }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+    raw = new TextDecoder().decode(bytes);
+  } catch { return new Response("Bad request.", { status: 400 }); }
+
   let payload;
-  try { payload = await request.json(); } catch {
+  try { payload = JSON.parse(raw); } catch {
     return new Response("Bad request.", { status: 400 });
   }
   if (payload.consent !== true || typeof payload.id !== "string" || !/^[a-zA-Z0-9-]{1,80}$/.test(payload.id) || !Array.isArray(payload.messages)) {
