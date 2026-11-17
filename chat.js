@@ -29,7 +29,10 @@
     ".bnc-in{flex:1;border:1px solid #ccc;border-radius:10px;padding:9px 11px;font:inherit;font-size:15px;outline:none}",
     ".bnc-in:focus{border-color:" + BRASS + "}",
     ".bnc-send{background:" + GREEN + ";color:#fff;border:0;border-radius:10px;padding:0 16px;font:600 15px inherit;cursor:pointer}",
-    ".bnc-send:disabled{opacity:.55;cursor:default}",\n    ".bnc-consent{display:flex;gap:8px;align-items:flex-start;padding:8px 12px 2px;background:#fff;color:#555;font-size:12px;line-height:1.35}",\n    ".bnc-consent input{margin-top:2px;flex:none}",\n    ".bnc-status{min-height:16px;padding:0 12px 6px;background:#fff;color:#5f665f;font-size:11px}",
+    ".bnc-send:disabled{opacity:.55;cursor:default}",
+    ".bnc-consent{display:flex;gap:8px;align-items:flex-start;padding:8px 12px 2px;background:#fff;color:#555;font-size:12px;line-height:1.35}",
+    ".bnc-consent input{margin-top:2px;flex:none}",
+    ".bnc-status{min-height:16px;padding:0 12px 6px;background:#fff;color:#5f665f;font-size:11px}",
     "@media (max-width:480px){#bnc-panel{right:12px;bottom:78px}}"
   ].join("\n");
 
@@ -63,10 +66,16 @@
   var chips = panel.querySelector(".bnc-chips");
   var form = panel.querySelector(".bnc-row");
   var input = panel.querySelector(".bnc-in");
-  var send = panel.querySelector(".bnc-send");\n  var consent = panel.querySelector(".bnc-email-consent");\n  var transcriptStatus = panel.querySelector(".bnc-status");\n  var closeButton = panel.querySelector(".bnc-x");
+  var send = panel.querySelector(".bnc-send");
+  var consent = panel.querySelector(".bnc-email-consent");
+  var transcriptStatus = panel.querySelector(".bnc-status");
+  var closeButton = panel.querySelector(".bnc-x");
   var history = [];
   var greeted = false;
-  var busy = false;\n  var transcriptSent = false;\n  var transcriptBusy = false;\n  var transcriptId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2);
+  var busy = false;
+  var transcriptSent = false;
+  var transcriptBusy = false;
+  var transcriptId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2);
 
   var SUGGESTIONS = [
     "What leathers do you offer?",
