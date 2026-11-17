@@ -53,9 +53,10 @@ export async function onRequestPost({ request, env }) {
     return new Response("Consent and transcript are required.", { status: 422 });
   }
 
-  const sentAt = sentTranscripts.get(payload.id);
-  if (sentAt && now - sentAt < 86400000) return new Response(JSON.stringify({ sent: true }), { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
-  if (sentAt) sentTranscripts.delete(payload.id);
+  const previousSend = sentTranscripts.get(payload.id);
+  if (previousSend && previousSend.state === "sent" && now - previousSend.at < 86400000) return new Response(JSON.stringify({ sent: true }), { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
+  if (previousSend && previousSend.state === "pending") return new Response("Transcript email is already being sent.", { status: 409 });
+  if (previousSend) sentTranscripts.delete(payload.id);
 
   const messages = payload.messages
     .filter(m => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
@@ -88,16 +89,17 @@ export async function onRequestPost({ request, env }) {
     redirect: "manual"
   });
 
-  sentTranscripts.set(payload.id, now);
+  sentTranscripts.set(payload.id, { state: "pending", at: now });
   try {
     const result = await env.BONOECO_FORMS.fetch(forwarded);
     if (result.status !== 303) {
       sentTranscripts.delete(payload.id);
       return new Response("Email delivery failed.", { status: 502 });
     }
+    sentTranscripts.set(payload.id, { state: "sent", at: now });
     if (sentTranscripts.size > 1000) {
-      for (const [id, timestamp] of sentTranscripts) {
-        if (now - timestamp > 86400000) sentTranscripts.delete(id);
+      for (const [id, record] of sentTranscripts) {
+        if (record.state === "sent" && now - record.at > 86400000) sentTranscripts.delete(id);
       }
       while (sentTranscripts.size > 1000) sentTranscripts.delete(sentTranscripts.keys().next().value);
     }
